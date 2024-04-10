@@ -8,6 +8,8 @@ import (
 
 type Store interface {
 	SaveItem(*models.Cacharro) error
+	SavePlace(*models.Place) error
+	GetPlace(int64) (*models.Place, error)
 }
 
 func InitDatabase() Store {
