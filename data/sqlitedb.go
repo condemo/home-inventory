@@ -57,6 +57,13 @@ func (s *SqliteStore) SavePlace(item *models.Place) error {
 	return err
 }
 
+func (s *SqliteStore) GetAllPlaces() ([]models.Place, error) {
+	var pl []models.Place
+	err := s.db.NewSelect().Model(&pl).Scan(context.TODO())
+
+	return pl, err
+}
+
 func (s *SqliteStore) GetPlace(id int64) (*models.Place, error) {
 	p := new(models.Place)
 	err := s.db.NewSelect().Model(p).Where("id = ?", id).Scan(context.Background())
