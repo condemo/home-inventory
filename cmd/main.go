@@ -11,10 +11,12 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/condemo/home-inventory/data"
 	"github.com/condemo/home-inventory/keymaps"
+	"github.com/condemo/home-inventory/models"
 	"github.com/condemo/home-inventory/styles"
 )
 
 type Model struct {
+	store     data.Store
 	help      help.Model
 	keys      keymaps.KeyMap
 	itemTable table.Model
@@ -25,6 +27,7 @@ type Model struct {
 func NewModel() *Model {
 	return &Model{
 		itemTable: initTable(),
+		store:     data.InitDatabase(),
 		keys:      keymaps.AppKeys,
 		help:      help.New(),
 	}
@@ -117,8 +120,13 @@ func (m Model) View() string {
 }
 
 func main() {
-	data.InitDB()
 	m := NewModel()
+	m.store.SaveItem(&models.Cacharro{
+		Name:   "Test",
+		Place:  "Cajón 2",
+		Tags:   "dsada dasdasd dasdasd asdaskjk",
+		Amount: 2,
+	})
 
 	if _, err := tea.NewProgram(m).Run(); err != nil {
 		fmt.Println("error:", err)
