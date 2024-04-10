@@ -11,7 +11,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/condemo/home-inventory/data"
 	"github.com/condemo/home-inventory/keymaps"
-	"github.com/condemo/home-inventory/models"
 	"github.com/condemo/home-inventory/styles"
 )
 
@@ -121,13 +120,6 @@ func (m Model) View() string {
 
 func main() {
 	m := NewModel()
-	m.store.SaveItem(&models.Cacharro{
-		Name:   "Test",
-		Place:  "Cajón 2",
-		Tags:   "dsada dasdasd dasdasd asdaskjk",
-		Amount: 2,
-	})
-
 	if _, err := tea.NewProgram(m).Run(); err != nil {
 		fmt.Println("error:", err)
 		os.Exit(1)
