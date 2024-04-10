@@ -32,8 +32,16 @@ func initSqliteDB() (*SqliteStore, error) {
 	}
 	bunDB := bun.NewDB(db, sqlitedialect.New())
 
-	// Tables
+	// TABLES
+	// Cacharro
 	_, err = bunDB.NewCreateTable().Model((*models.Cacharro)(nil)).
+		IfNotExists().Exec(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	// Place
+	_, err = bunDB.NewCreateTable().Model((*models.Place)(nil)).
 		IfNotExists().Exec(context.Background())
 
 	return &SqliteStore{db: *bunDB}, err
@@ -42,4 +50,16 @@ func initSqliteDB() (*SqliteStore, error) {
 func (s *SqliteStore) SaveItem(item *models.Cacharro) error {
 	_, err := s.db.NewInsert().Model(item).Exec(context.Background())
 	return err
+}
+
+func (s *SqliteStore) SavePlace(item *models.Place) error {
+	_, err := s.db.NewInsert().Model(item).Exec(context.TODO())
+	return err
+}
+
+func (s *SqliteStore) GetPlace(id int64) (*models.Place, error) {
+	p := new(models.Place)
+	err := s.db.NewSelect().Model(p).Where("id = ?", id).Scan(context.Background())
+
+	return p, err
 }
