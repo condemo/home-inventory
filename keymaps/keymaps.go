@@ -19,8 +19,9 @@ func (k KeyMap) ShortHelp() []key.Binding {
 
 func (k KeyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
-		{k.Up, k.Down, k.Search},
-		{k.Select, k.AddItem, k.AddPlace},
+		{k.Up, k.Down},
+		{k.Select, k.Search},
+		{k.AddItem, k.AddPlace},
 		{k.Help, k.Quit},
 	}
 }
