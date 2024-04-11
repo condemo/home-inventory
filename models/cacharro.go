@@ -3,7 +3,7 @@ package models
 import "github.com/uptrace/bun"
 
 type Cacharro struct {
-	bun.BaseModel `bun:"table:cacharro,alias:c"`
+	bun.BaseModel `bun:"table:cacharros,alias:c"`
 
 	Name    string `bun:"name,notnull,unique"`
 	Place   *Place `bun:"rel:belongs-to,join:place_id=id"`
@@ -14,7 +14,7 @@ type Cacharro struct {
 }
 
 type Place struct {
-	bun.BaseModel `bun:"table:place,alias:p"`
+	bun.BaseModel `bun:"table:places,alias:p"`
 
 	Name string `bun:"name,unique"`
 	ID   int64  `bun:",pk,autoincrement"`

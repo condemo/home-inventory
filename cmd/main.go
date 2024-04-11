@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"strconv"
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
@@ -15,7 +17,6 @@ import (
 )
 
 type Model struct {
-	store     data.Store
 	help      help.Model
 	keys      keymaps.KeyMap
 	itemTable table.Model
@@ -23,10 +24,11 @@ type Model struct {
 	quitting  bool
 }
 
+var store = data.InitDatabase()
+
 func NewModel() *Model {
 	return &Model{
 		itemTable: initTable(),
-		store:     data.InitDatabase(),
 		keys:      keymaps.AppKeys,
 		help:      help.New(),
 	}
@@ -40,13 +42,18 @@ func initTable() table.Model {
 		{Title: "Tags", Width: 30},
 	}
 
-	// TODO: Cargar los datos dinamicamente
-	rows := []table.Row{
-		{"Prueba", "1", "Salón cajón 2", "video, cables"},
-		{"Prueba2", "2", "Salón cajón 2", "video, cables"},
-		{"Prueba3", "3", "Cama Gus", "cacharro, electrónica"},
-		{"Prueba4", "53", "Salón cajón 1", "video, cables"},
-		{"Prueba5", "6", "Salón cajón 2", "video, cables"},
+	// TODO: Limpiar y buscar lugar definitivo para cargar la DB
+	itemsList, err := store.GetAllItems()
+	if err != nil {
+		log.Panic(err)
+	}
+	rows := []table.Row{}
+	for i := range itemsList {
+		current := itemsList[i]
+		rows = append(rows, table.Row{
+			current.Name, strconv.Itoa(int(current.Amount)), current.Place.Name, current.Tags,
+		},
+		)
 	}
 
 	t := table.New(

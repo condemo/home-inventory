@@ -8,6 +8,7 @@ import (
 
 type Store interface {
 	SaveItem(*models.Cacharro) error
+	GetAllItems() ([]models.Cacharro, error)
 	SavePlace(*models.Place) error
 	GetPlace(int64) (*models.Place, error)
 	GetAllPlaces() ([]models.Place, error)

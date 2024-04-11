@@ -52,6 +52,15 @@ func (s *SqliteStore) SaveItem(item *models.Cacharro) error {
 	return err
 }
 
+func (s *SqliteStore) GetAllItems() ([]models.Cacharro, error) {
+	var il []models.Cacharro
+	err := s.db.NewSelect().Model(&il).
+		Relation("Place").Where("place_id = place.id").
+		Scan(context.TODO())
+
+	return il, err
+}
+
 func (s *SqliteStore) SavePlace(item *models.Place) error {
 	_, err := s.db.NewInsert().Model(item).Exec(context.TODO())
 	return err
