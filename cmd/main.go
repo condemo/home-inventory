@@ -38,8 +38,8 @@ func initTable() table.Model {
 	colums := []table.Column{
 		{Title: "Nombre", Width: 20},
 		{Title: "Can.", Width: 4},
-		{Title: "Lugar", Width: 15},
-		{Title: "Tags", Width: 30},
+		{Title: "Lugar", Width: 30},
+		{Title: "Tags", Width: 25},
 	}
 
 	// TODO: Limpiar y buscar lugar definitivo para cargar la DB
@@ -64,11 +64,15 @@ func initTable() table.Model {
 	)
 
 	s := table.DefaultStyles()
-	s.Header = s.Header.BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("240")).
-		Align(lipgloss.Center)
-	s.Selected = styles.SelectedStyle
-	s.Cell = s.Cell.Align(lipgloss.Center)
+
+	s.Header = s.Header.
+		BorderStyle(lipgloss.ThickBorder()).
+		BorderForeground(styles.Colors.SelectPrimary).
+		Bold(true)
+	s.Selected = s.Selected.
+		Foreground(styles.Colors.TextPrimary).
+		Background(styles.Colors.SelectPrimary).
+		Bold(false)
 
 	t.SetStyles(s)
 
