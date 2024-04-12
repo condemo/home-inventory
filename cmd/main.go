@@ -15,6 +15,13 @@ import (
 	"github.com/condemo/home-inventory/styles"
 )
 
+type currentView int
+
+const (
+	mainView currentView = iota
+	addPlaceView
+)
+
 type Model struct {
 	help      help.Model
 	keys      keymaps.KeyMap
