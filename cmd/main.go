@@ -2,9 +2,7 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
-	"strconv"
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
@@ -12,6 +10,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/condemo/home-inventory/data"
+	"github.com/condemo/home-inventory/elements"
 	"github.com/condemo/home-inventory/keymaps"
 	"github.com/condemo/home-inventory/styles"
 )
@@ -28,54 +27,10 @@ var store = data.InitDatabase()
 
 func NewModel() *Model {
 	return &Model{
-		itemTable: initTable(),
+		itemTable: elements.NewTable(store),
 		keys:      keymaps.AppKeys,
 		help:      help.New(),
 	}
-}
-
-func initTable() table.Model {
-	colums := []table.Column{
-		{Title: "Nombre", Width: 20},
-		{Title: "Can.", Width: 4},
-		{Title: "Lugar", Width: 30},
-		{Title: "Tags", Width: 25},
-	}
-
-	// TODO: Limpiar y buscar lugar definitivo para cargar la DB
-	itemsList, err := store.GetAllItems()
-	if err != nil {
-		log.Panic(err)
-	}
-	rows := []table.Row{}
-	for i := range itemsList {
-		current := itemsList[i]
-		rows = append(rows, table.Row{
-			current.Name, strconv.Itoa(int(current.Amount)), current.Place.Name, current.Tags,
-		},
-		)
-	}
-
-	t := table.New(
-		table.WithColumns(colums),
-		table.WithRows(rows),
-		table.WithFocused(true),
-	)
-
-	s := table.DefaultStyles()
-
-	s.Header = s.Header.
-		BorderStyle(lipgloss.ThickBorder()).
-		BorderForeground(styles.Colors.SelectPrimary).
-		Bold(true)
-	s.Selected = s.Selected.
-		Foreground(styles.Colors.TextPrimary).
-		Background(styles.Colors.SelectPrimary).
-		Bold(false)
-
-	t.SetStyles(s)
-
-	return t
 }
 
 func (m Model) Init() tea.Cmd { return nil }
