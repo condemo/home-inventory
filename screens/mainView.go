@@ -12,7 +12,16 @@ import (
 	"github.com/condemo/home-inventory/styles"
 )
 
-type MainView struct {
+var ModelList []tea.Model
+
+type currentView int
+
+const (
+	MainView currentView = iota
+	PlaceView
+)
+
+type MainModel struct {
 	help      help.Model
 	keys      keymaps.KeyMap
 	itemTable table.Model
@@ -22,17 +31,17 @@ type MainView struct {
 
 var store = data.InitDatabase()
 
-func NewMainModel() *MainView {
-	return &MainView{
+func New() *MainModel {
+	return &MainModel{
 		itemTable: elements.NewTable(store),
 		keys:      keymaps.AppKeys,
 		help:      help.New(),
 	}
 }
 
-func (m MainView) Init() tea.Cmd { return nil }
+func (m MainModel) Init() tea.Cmd { return nil }
 
-func (m MainView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
@@ -58,6 +67,11 @@ func (m MainView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.itemTable.SetCursor(m.itemTable.Cursor() - 1)
 			}
 
+		case key.Matches(msg, m.keys.AddPlace):
+			ModelList[MainView] = m
+			ModelList[PlaceView] = NewPlaceModel()
+			return ModelList[PlaceView].Update(nil)
+
 		case key.Matches(msg, m.keys.Help):
 			m.help.ShowAll = !m.help.ShowAll
 		}
@@ -65,7 +79,7 @@ func (m MainView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m MainView) View() string {
+func (m MainModel) View() string {
 	if m.quitting {
 		return ""
 	}
