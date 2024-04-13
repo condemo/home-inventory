@@ -1,8 +1,11 @@
 package screens
 
 import (
+	"log"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/condemo/home-inventory/models"
 )
 
 type AddPlaceView struct {
@@ -31,6 +34,7 @@ func (m AddPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "enter":
 			if m.nameEntry.Focused() {
+				m.CreatePlace()
 				return ModelList[MainView].Update(nil)
 			}
 		case "esc":
@@ -49,4 +53,14 @@ func (m AddPlaceView) View() string {
 		return ""
 	}
 	return m.nameEntry.View()
+}
+
+func (m AddPlaceView) CreatePlace() {
+	p := new(models.Place)
+	p.Name = m.nameEntry.Value()
+
+	err := store.SavePlace(p)
+	if err != nil {
+		log.Panic("error:", err)
+	}
 }

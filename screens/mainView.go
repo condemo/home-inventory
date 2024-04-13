@@ -1,6 +1,8 @@
 package screens
 
 import (
+	"strconv"
+
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/table"
@@ -9,6 +11,7 @@ import (
 	"github.com/condemo/home-inventory/data"
 	"github.com/condemo/home-inventory/elements"
 	"github.com/condemo/home-inventory/keymaps"
+	"github.com/condemo/home-inventory/models"
 	"github.com/condemo/home-inventory/styles"
 )
 
@@ -92,4 +95,16 @@ func (m MainModel) View() string {
 		lipgloss.Center, m.itemTable.View(), helpView)
 
 	return styles.ContainerStyle.Render(mainContainer)
+}
+
+func (m *MainModel) AddItem(c models.Cacharro) tea.Cmd {
+	tr := table.Row{
+		c.Name, strconv.Itoa(int(c.Amount)), c.Place.Name, c.Tags,
+	}
+	rl := m.itemTable.Rows()
+	rl = append(rl, tr)
+
+	m.itemTable.SetRows(rl)
+
+	return nil
 }
