@@ -22,6 +22,7 @@ type currentView int
 const (
 	MainView currentView = iota
 	PlaceView
+	ItemView
 )
 
 type MainModel struct {
@@ -74,6 +75,11 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			ModelList[MainView] = m
 			ModelList[PlaceView] = NewPlaceModel()
 			return ModelList[PlaceView].Update(nil)
+
+		case key.Matches(msg, m.keys.AddItem):
+			ModelList[MainView] = m
+			ModelList[ItemView] = NewItemsView()
+			return ModelList[ItemView].Update(nil)
 
 		case key.Matches(msg, m.keys.Help):
 			m.help.ShowAll = !m.help.ShowAll
