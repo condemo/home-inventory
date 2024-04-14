@@ -18,7 +18,10 @@ var (
 			Foreground(Colors.HelpPrimary)
 
 	ContainerStyle = lipgloss.NewStyle().
-			Padding(1)
+			Padding(1).MarginLeft(3)
+
+	HelpContainer = lipgloss.NewStyle().
+			MarginTop(3).Align(lipgloss.Center)
 
 	SelectedStyle = lipgloss.NewStyle().
 			Foreground(Colors.TextPrimary).
