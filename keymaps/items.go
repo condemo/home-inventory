@@ -7,19 +7,15 @@ type ItemsKeymaps struct {
 	Down   key.Binding
 	Back   key.Binding
 	Submit key.Binding
-	Help   key.Binding
 	Quit   key.Binding
 }
 
 func (k ItemsKeymaps) ShortHelp() []key.Binding {
-	return []key.Binding{k.Back, k.Submit, k.Help}
+	return []key.Binding{k.Up, k.Down, k.Back, k.Submit, k.Back, k.Quit}
 }
 
 func (k ItemsKeymaps) FullHelp() [][]key.Binding {
-	return [][]key.Binding{
-		{k.Up, k.Down, k.Submit},
-		{k.Back, k.Help, k.Quit},
-	}
+	return nil
 }
 
 var ItemsKeys = ItemsKeymaps{
@@ -34,10 +30,6 @@ var ItemsKeys = ItemsKeymaps{
 	Submit: key.NewBinding(
 		key.WithKeys("enter"),
 		key.WithHelp("enter", "next/submit"),
-	),
-	Help: key.NewBinding(
-		key.WithKeys("?"),
-		key.WithHelp("?", "help"),
 	),
 	Back: key.NewBinding(
 		key.WithKeys("esc"),
