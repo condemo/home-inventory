@@ -9,7 +9,11 @@ import (
 )
 
 func main() {
-	screens.ModelList = []tea.Model{screens.New(), screens.NewPlaceModel()}
+	screens.ModelList = []tea.Model{
+		screens.New(),
+		screens.NewPlaceModel(),
+		screens.NewItemsView(),
+	}
 	m := screens.ModelList[screens.MainView]
 	if _, err := tea.NewProgram(m).Run(); err != nil {
 		fmt.Println("error:", err)
