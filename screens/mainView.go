@@ -26,7 +26,7 @@ const (
 
 type MainModel struct {
 	help      help.Model
-	keys      keymaps.KeyMap
+	keys      keymaps.MainKeyMap
 	itemTable table.Model
 	loaded    bool
 	quitting  bool
@@ -37,7 +37,7 @@ var store = data.InitDatabase()
 func New() *MainModel {
 	return &MainModel{
 		itemTable: elements.NewTable(store),
-		keys:      keymaps.AppKeys,
+		keys:      keymaps.MainKeys,
 		help:      help.New(),
 	}
 }

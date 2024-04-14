@@ -2,7 +2,7 @@ package keymaps
 
 import "github.com/charmbracelet/bubbles/key"
 
-type KeyMap struct {
+type MainKeyMap struct {
 	Up       key.Binding
 	Down     key.Binding
 	AddItem  key.Binding
@@ -13,11 +13,11 @@ type KeyMap struct {
 	Quit     key.Binding
 }
 
-func (k KeyMap) ShortHelp() []key.Binding {
+func (k MainKeyMap) ShortHelp() []key.Binding {
 	return []key.Binding{k.Help, k.Quit}
 }
 
-func (k KeyMap) FullHelp() [][]key.Binding {
+func (k MainKeyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
 		{k.Up, k.Down},
 		{k.Select, k.Search},
@@ -26,7 +26,7 @@ func (k KeyMap) FullHelp() [][]key.Binding {
 	}
 }
 
-var AppKeys = KeyMap{
+var MainKeys = MainKeyMap{
 	Up: key.NewBinding(
 		key.WithKeys("k", "up"),
 		key.WithHelp("↑/k", "move up"),
