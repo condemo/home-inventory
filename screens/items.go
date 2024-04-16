@@ -1,6 +1,7 @@
 package screens
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -12,20 +13,16 @@ import (
 	"github.com/condemo/home-inventory/styles"
 )
 
-type inputsType int
-
-const (
-	nameInput inputsType = iota
-	amountInput
-	placeInput
-	tagsInput
+var (
+	focusedButton = styles.InputFocusedStyle.Copy().Render("[ Submit ]")
+	blurredButton = fmt.Sprintf("[ %s ]", styles.BlurredStyle.Render("Submit"))
 )
 
 type AddItemsView struct {
 	help       help.Model
 	keys       keymaps.ItemsKeymaps
 	inputs     []textinput.Model
-	focusIndex inputsType
+	focusIndex int
 	quitting   bool
 }
 
@@ -33,7 +30,7 @@ func NewItemsView() *AddItemsView {
 	m := AddItemsView{
 		help:       help.New(),
 		keys:       keymaps.ItemsKeys,
-		focusIndex: nameInput,
+		focusIndex: 0,
 		inputs:     make([]textinput.Model, 4),
 	}
 
@@ -41,22 +38,23 @@ func NewItemsView() *AddItemsView {
 		t := textinput.New()
 		t.Cursor.Style = styles.CursorSelectStyle
 		switch i {
-		case int(nameInput):
+		case 0:
 			t.Placeholder = "nombre"
 			t.CharLimit = 25
 			t.Width = 30
 			t.PromptStyle = styles.InputFocusedStyle
 			t.TextStyle = styles.TextPrimaryStyle
 			t.Focus()
-		case int(amountInput):
+		case 1:
 			t.Placeholder = "can."
 			t.CharLimit = 4
 			t.Width = 4
-		case int(placeInput):
+		case 2:
 			t.Placeholder = "lugar"
 			t.CharLimit = 100
 			t.Width = 100
-		case int(tagsInput):
+			t.SetSuggestions([]string{"test", "probando"})
+		case 3:
 			t.Placeholder = "tags"
 			t.CharLimit = 100
 			t.Width = 100
@@ -75,28 +73,47 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		// TODO: Cambiar de estilo el moverse por los elementos
-		case key.Matches(msg, m.keys.Up):
-			m.inputs[m.focusIndex].Blur()
-			if m.focusIndex == nameInput {
-				m.focusIndex = tagsInput
-			} else {
-				m.focusIndex--
+		case key.Matches(msg, m.keys.Up, m.keys.Down, m.keys.Submit):
+			if key.Matches(msg, m.keys.Submit) && m.focusIndex == len(m.inputs) {
+				// TODO: Implementar guardado de items
+				m.quitting = true // FIX: Borrar
+				return m, tea.Quit
 			}
-			m.inputs[m.focusIndex].Focus()
-
-		case key.Matches(msg, m.keys.Down, m.keys.Submit):
-			m.inputs[m.focusIndex].Blur()
-			if m.focusIndex == tagsInput {
-				m.focusIndex = nameInput
-				if key.Matches(msg, m.keys.Submit) {
-					// TODO: Implementar guardado de items, debería haber uno/s botones al final
-					m.quitting = true
-					return m, tea.Quit
+			if key.Matches(msg, m.keys.Up) {
+				if m.focusIndex == 0 {
+					m.focusIndex = len(m.inputs) - 1
+				} else {
+					m.focusIndex--
 				}
-			} else {
-				m.focusIndex++
 			}
-			m.inputs[m.focusIndex].Focus()
+			if key.Matches(msg, m.keys.Down, m.keys.Submit) {
+				if key.Matches(msg, m.keys.Down) {
+					if m.focusIndex == len(m.inputs)-1 {
+						m.focusIndex = 0
+					} else {
+						m.focusIndex++
+					}
+				} else {
+					m.focusIndex++
+				}
+			}
+
+			cmds := make([]tea.Cmd, len(m.inputs))
+			for i := 0; i <= len(m.inputs)-1; i++ {
+				if i == m.focusIndex {
+					// Set focused state
+					cmds[i] = m.inputs[i].Focus()
+					m.inputs[i].PromptStyle = styles.TextPrimaryStyle
+					m.inputs[i].TextStyle = styles.TextPrimaryStyle
+					continue
+				}
+				// Remove focused state
+				m.inputs[i].Blur()
+				m.inputs[i].PromptStyle = styles.NoStyle
+				m.inputs[i].TextStyle = styles.NoStyle
+			}
+
+			return m, tea.Batch(cmds...)
 
 		case key.Matches(msg, m.keys.Back):
 			return ModelList[MainView].Update(nil)
@@ -109,8 +126,8 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 	}
-
 	cmd = m.updateInputs(msg)
+
 	return m, cmd
 }
 
@@ -137,6 +154,13 @@ func (m AddItemsView) View() string {
 			b.WriteRune('\n')
 		}
 	}
+
+	button := &blurredButton
+	if m.focusIndex == len(m.inputs) {
+		button = &focusedButton
+	}
+
+	fmt.Fprintf(&b, "\n\n%s\n\n", *button)
 
 	helpView := m.help.View(m.keys)
 
