@@ -31,6 +31,8 @@ var (
 	TextPrimaryStyle = lipgloss.NewStyle().
 				Foreground(lipgloss.Color("205"))
 
+	BlurredStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
+	NoStyle           = lipgloss.NewStyle()
 	InputFocusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("57"))
 	CursorSelectStyle = InputFocusedStyle.Copy()
 )
