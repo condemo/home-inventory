@@ -22,17 +22,19 @@ const (
 )
 
 type AddItemsView struct {
-	help     help.Model
-	keys     keymaps.ItemsKeymaps
-	inputs   []textinput.Model
-	quitting bool
+	help       help.Model
+	keys       keymaps.ItemsKeymaps
+	inputs     []textinput.Model
+	focusIndex inputsType
+	quitting   bool
 }
 
 func NewItemsView() *AddItemsView {
 	m := AddItemsView{
-		help:   help.New(),
-		keys:   keymaps.ItemsKeys,
-		inputs: make([]textinput.Model, 4),
+		help:       help.New(),
+		keys:       keymaps.ItemsKeys,
+		focusIndex: nameInput,
+		inputs:     make([]textinput.Model, 4),
 	}
 
 	for i := range m.inputs {
@@ -72,19 +74,54 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
+		// TODO: Cambiar de estilo el moverse por los elementos
+		case key.Matches(msg, m.keys.Up):
+			m.inputs[m.focusIndex].Blur()
+			if m.focusIndex == nameInput {
+				m.focusIndex = tagsInput
+			} else {
+				m.focusIndex--
+			}
+			m.inputs[m.focusIndex].Focus()
+
+		case key.Matches(msg, m.keys.Down, m.keys.Submit):
+			m.inputs[m.focusIndex].Blur()
+			if m.focusIndex == tagsInput {
+				m.focusIndex = nameInput
+				if key.Matches(msg, m.keys.Submit) {
+					// TODO: Implementar guardado de items, debería haber uno/s botones al final
+					m.quitting = true
+					return m, tea.Quit
+				}
+			} else {
+				m.focusIndex++
+			}
+			m.inputs[m.focusIndex].Focus()
+
 		case key.Matches(msg, m.keys.Back):
 			return ModelList[MainView].Update(nil)
+
 		case key.Matches(msg, m.keys.AddPlace):
 			return ModelList[PlaceView].Update(nil)
+
 		case key.Matches(msg, m.keys.Quit):
 			m.quitting = true
 			return m, tea.Quit
 		}
 	}
-	if m.inputs[nameInput].Focused() {
-		m.inputs[nameInput], cmd = m.inputs[nameInput].Update(msg)
-	}
+
+	cmd = m.updateInputs(msg)
 	return m, cmd
+}
+
+func (m *AddItemsView) updateInputs(msg tea.Msg) tea.Cmd {
+	cmds := make([]tea.Cmd, len(m.inputs))
+
+	for i := range m.inputs {
+		m.inputs[i], cmds[i] = m.inputs[i].Update(msg)
+	}
+
+	return tea.Batch(cmds...)
 }
 
 func (m AddItemsView) View() string {
