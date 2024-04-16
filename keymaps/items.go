@@ -23,7 +23,7 @@ func (k ItemsKeymaps) FullHelp() [][]key.Binding { return nil }
 var ItemsKeys = ItemsKeymaps{
 	Up: key.NewBinding(
 		key.WithKeys("up"),
-		key.WithHelp("↑", "Up"),
+		key.WithHelp("↑", "up"),
 	),
 	Down: key.NewBinding(
 		key.WithKeys("down"),
