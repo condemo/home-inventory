@@ -3,14 +3,13 @@ package keymaps
 import "github.com/charmbracelet/bubbles/key"
 
 type MainKeyMap struct {
-	Up       key.Binding
-	Down     key.Binding
-	AddItem  key.Binding
-	AddPlace key.Binding
-	Help     key.Binding
-	Search   key.Binding
-	Select   key.Binding
-	Quit     key.Binding
+	Up      key.Binding
+	Down    key.Binding
+	AddItem key.Binding
+	Help    key.Binding
+	Search  key.Binding
+	Select  key.Binding
+	Quit    key.Binding
 }
 
 func (k MainKeyMap) ShortHelp() []key.Binding {
@@ -21,8 +20,8 @@ func (k MainKeyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
 		{k.Up, k.Down},
 		{k.Select, k.Search},
-		{k.AddItem, k.AddPlace},
-		{k.Help, k.Quit},
+		{k.AddItem, k.Help},
+		{k.Quit},
 	}
 }
 
@@ -38,10 +37,6 @@ var MainKeys = MainKeyMap{
 	AddItem: key.NewBinding(
 		key.WithKeys("a"),
 		key.WithHelp("a", "add item"),
-	),
-	AddPlace: key.NewBinding(
-		key.WithKeys("p"),
-		key.WithHelp("p", "add place"),
 	),
 	Search: key.NewBinding(
 		key.WithKeys("/"),
