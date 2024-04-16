@@ -1,6 +1,8 @@
 package styles
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"github.com/charmbracelet/lipgloss"
+)
 
 type ColorPalette struct {
 	SelectPrimary  lipgloss.CompleteColor
@@ -26,6 +28,11 @@ var (
 	SelectedStyle = lipgloss.NewStyle().
 			Foreground(Colors.TextPrimary).
 			Background(Colors.SelectPrimary)
+	TextPrimaryStyle = lipgloss.NewStyle().
+				Foreground(lipgloss.Color("205"))
+
+	InputFocusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("57"))
+	CursorSelectStyle = InputFocusedStyle.Copy()
 )
 
 func init() {
