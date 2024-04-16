@@ -43,10 +43,10 @@ func (m AddPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keys.Submit):
 			if m.nameEntry.Focused() {
 				m.CreatePlace()
-				return ModelList[MainView].Update(nil)
+				return ModelList[ItemView].Update(nil)
 			}
 		case key.Matches(msg, m.keys.Back):
-			return ModelList[MainView].Update(nil)
+			return ModelList[ItemView].Update(nil)
 		}
 	}
 	if m.nameEntry.Focused() {

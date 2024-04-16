@@ -71,11 +71,6 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.itemTable.SetCursor(m.itemTable.Cursor() - 1)
 			}
 
-		case key.Matches(msg, m.keys.AddPlace):
-			ModelList[MainView] = m
-			ModelList[PlaceView] = NewPlaceModel()
-			return ModelList[PlaceView].Update(nil)
-
 		case key.Matches(msg, m.keys.AddItem):
 			ModelList[MainView] = m
 			ModelList[ItemView] = NewItemsView()
