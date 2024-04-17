@@ -107,6 +107,9 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.focusIndex++
 				}
 			}
+			if key.Matches(msg, m.keys.Down) && m.focusIndex >= len(m.inputs) {
+				m.focusIndex = inName
+			}
 
 			cmds := make([]tea.Cmd, len(m.inputs))
 			for i := 0; i <= len(m.inputs)-1; i++ {
