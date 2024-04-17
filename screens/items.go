@@ -2,6 +2,8 @@ package screens
 
 import (
 	"fmt"
+	"log"
+	"strconv"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -10,6 +12,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/condemo/home-inventory/keymaps"
+	"github.com/condemo/home-inventory/models"
 	"github.com/condemo/home-inventory/styles"
 )
 
@@ -75,9 +78,9 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// TODO: Cambiar de estilo el moverse por los elementos
 		case key.Matches(msg, m.keys.Up, m.keys.Down, m.keys.Submit):
 			if key.Matches(msg, m.keys.Submit) && m.focusIndex == len(m.inputs) {
-				// TODO: Implementar guardado de items
-				m.quitting = true // FIX: Borrar
-				return m, tea.Quit
+				msg := m.createItem()
+				ModelList[ItemView] = m
+				return ModelList[MainView].Update(msg)
 			}
 			if key.Matches(msg, m.keys.Up) {
 				if m.focusIndex == 0 {
@@ -101,13 +104,12 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmds := make([]tea.Cmd, len(m.inputs))
 			for i := 0; i <= len(m.inputs)-1; i++ {
 				if i == m.focusIndex {
-					// Set focused state
 					cmds[i] = m.inputs[i].Focus()
 					m.inputs[i].PromptStyle = styles.TextPrimaryStyle
 					m.inputs[i].TextStyle = styles.TextPrimaryStyle
 					continue
 				}
-				// Remove focused state
+
 				m.inputs[i].Blur()
 				m.inputs[i].PromptStyle = styles.NoStyle
 				m.inputs[i].TextStyle = styles.NoStyle
@@ -125,8 +127,8 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.quitting = true
 			return m, tea.Quit
 		}
+		cmd = m.updateInputs(msg)
 	}
-	cmd = m.updateInputs(msg)
 
 	return m, cmd
 }
@@ -139,6 +141,32 @@ func (m *AddItemsView) updateInputs(msg tea.Msg) tea.Cmd {
 	}
 
 	return tea.Batch(cmds...)
+}
+
+func (m AddItemsView) createItem() tea.Msg {
+	a, err := strconv.ParseUint(m.inputs[1].Value(), 10, 8)
+	if err != nil {
+		// TODO: Implementar notificaciones de errores y no salir de el programa
+		log.Panic(err)
+	}
+	item := &models.Cacharro{
+		Name:    m.inputs[0].Value(),
+		Amount:  uint8(a),
+		PlaceID: 2,
+		Tags:    m.inputs[3].Value(),
+	}
+
+	// TODO: Manejar mejor los errores
+	err = store.SaveItem(item)
+	if err != nil {
+		log.Panic(err)
+	}
+	item, err = store.GetItem(item.ID)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	return *item
 }
 
 func (m AddItemsView) View() string {

@@ -79,6 +79,8 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keys.Help):
 			m.help.ShowAll = !m.help.ShowAll
 		}
+	case models.Cacharro:
+		m.AddItem(msg)
 	}
 	return m, cmd
 }
