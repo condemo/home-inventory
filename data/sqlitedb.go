@@ -33,6 +33,7 @@ func initSqliteDB() (*SqliteStore, error) {
 	bunDB := bun.NewDB(db, sqlitedialect.New())
 
 	// TABLES
+
 	// Cacharro
 	_, err = bunDB.NewCreateTable().Model((*models.Cacharro)(nil)).
 		IfNotExists().Exec(context.Background())
@@ -48,8 +49,20 @@ func initSqliteDB() (*SqliteStore, error) {
 }
 
 func (s *SqliteStore) SaveItem(item *models.Cacharro) error {
-	_, err := s.db.NewInsert().Model(item).Exec(context.Background())
+	_, err := s.db.NewInsert().Model(item).
+		Exec(context.Background())
+
 	return err
+}
+
+func (s *SqliteStore) GetItem(id int64) (*models.Cacharro, error) {
+	item := new(models.Cacharro)
+	err := s.db.NewSelect().Model(item).
+		Where("c.id = ?", id).
+		Relation("Place").Where("place_id = place.id").
+		Scan(context.TODO())
+
+	return item, err
 }
 
 func (s *SqliteStore) GetAllItems() ([]models.Cacharro, error) {
