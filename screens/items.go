@@ -21,6 +21,13 @@ var (
 	blurredButton = fmt.Sprintf("[ %s ]", styles.BlurredStyle.Render("Submit"))
 )
 
+const (
+	inName int = iota
+	inAmount
+	inPlace
+	inTags
+)
+
 type AddItemsView struct {
 	help       help.Model
 	keys       keymaps.ItemsKeymaps
@@ -41,23 +48,23 @@ func NewItemsView() *AddItemsView {
 		t := textinput.New()
 		t.Cursor.Style = styles.CursorSelectStyle
 		switch i {
-		case 0:
+		case inName:
 			t.Placeholder = "nombre"
 			t.CharLimit = 25
 			t.Width = 30
 			t.PromptStyle = styles.InputFocusedStyle
 			t.TextStyle = styles.TextPrimaryStyle
 			t.Focus()
-		case 1:
+		case inAmount:
 			t.Placeholder = "can."
 			t.CharLimit = 4
 			t.Width = 4
-		case 2:
+		case inPlace:
 			t.Placeholder = "lugar"
 			t.CharLimit = 100
 			t.Width = 100
 			t.SetSuggestions([]string{"test", "probando"})
-		case 3:
+		case inTags:
 			t.Placeholder = "tags"
 			t.CharLimit = 100
 			t.Width = 100
@@ -83,7 +90,7 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return ModelList[MainView].Update(msg)
 			}
 			if key.Matches(msg, m.keys.Up) {
-				if m.focusIndex == 0 {
+				if m.focusIndex == inName {
 					m.focusIndex = len(m.inputs) - 1
 				} else {
 					m.focusIndex--
@@ -92,7 +99,7 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if key.Matches(msg, m.keys.Down, m.keys.Submit) {
 				if key.Matches(msg, m.keys.Down) {
 					if m.focusIndex == len(m.inputs)-1 {
-						m.focusIndex = 0
+						m.focusIndex = inName
 					} else {
 						m.focusIndex++
 					}
@@ -150,8 +157,9 @@ func (m AddItemsView) createItem() tea.Msg {
 		log.Panic(err)
 	}
 	item := &models.Cacharro{
-		Name:    m.inputs[0].Value(),
-		Amount:  uint8(a),
+		Name:   m.inputs[0].Value(),
+		Amount: uint8(a),
+		// FIX: PlaceID esta hardcoded, hacerlo dinámico
 		PlaceID: 2,
 		Tags:    m.inputs[3].Value(),
 	}
