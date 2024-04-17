@@ -26,8 +26,8 @@ var ItemsKeys = ItemsKeymaps{
 		key.WithHelp("↑", "up"),
 	),
 	Down: key.NewBinding(
-		key.WithKeys("down"),
-		key.WithHelp("↓", "down"),
+		key.WithKeys("down", "tab"),
+		key.WithHelp("↓/tab", "down"),
 	),
 	Submit: key.NewBinding(
 		key.WithKeys("enter"),
