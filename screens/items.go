@@ -32,6 +32,7 @@ type AddItemsView struct {
 	help       help.Model
 	keys       keymaps.ItemsKeymaps
 	inputs     []textinput.Model
+  placesList []models.Place
 	focusIndex int
 	quitting   bool
 }
@@ -75,7 +76,15 @@ func NewItemsView() *AddItemsView {
 	return &m
 }
 
-func (m AddItemsView) Init() tea.Cmd { return nil }
+func (m AddItemsView) Init() tea.Cmd {
+	pl, err := store.GetAllPlaces()
+	if err != nil {
+		log.Panic(err)
+	}
+
+  m.
+	return nil
+}
 
 func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd

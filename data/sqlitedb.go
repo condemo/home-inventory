@@ -81,7 +81,9 @@ func (s *SqliteStore) SavePlace(item *models.Place) error {
 
 func (s *SqliteStore) GetAllPlaces() ([]models.Place, error) {
 	var pl []models.Place
-	err := s.db.NewSelect().Model(&pl).Scan(context.TODO())
+	err := s.db.NewSelect().Model(&pl).
+		Order("id ASC").
+		Scan(context.TODO())
 
 	return pl, err
 }
