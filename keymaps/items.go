@@ -13,8 +13,7 @@ type ItemsKeymaps struct {
 
 func (k ItemsKeymaps) ShortHelp() []key.Binding {
 	return []key.Binding{
-		k.Up, k.Down, k.AddPlace, k.Back,
-		k.Submit, k.Back, k.Quit,
+		k.Back, k.Up, k.Down, k.Submit, k.AddPlace, k.Quit,
 	}
 }
 
