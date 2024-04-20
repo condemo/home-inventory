@@ -32,7 +32,6 @@ type AddItemsView struct {
 	help       help.Model
 	keys       keymaps.ItemsKeymaps
 	inputs     []textinput.Model
-  placesList []models.Place
 	focusIndex int
 	quitting   bool
 }
@@ -64,7 +63,6 @@ func NewItemsView() *AddItemsView {
 			t.Placeholder = "lugar"
 			t.CharLimit = 100
 			t.Width = 100
-			t.SetSuggestions([]string{"test", "probando"})
 		case inTags:
 			t.Placeholder = "tags"
 			t.CharLimit = 100
@@ -77,12 +75,6 @@ func NewItemsView() *AddItemsView {
 }
 
 func (m AddItemsView) Init() tea.Cmd {
-	pl, err := store.GetAllPlaces()
-	if err != nil {
-		log.Panic(err)
-	}
-
-  m.
 	return nil
 }
 
