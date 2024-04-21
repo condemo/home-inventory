@@ -17,12 +17,20 @@ import (
 
 var ModelList []tea.Model
 
+type WSize int
+
+var (
+	WindowW WSize
+	WindowH WSize
+)
+
 type currentView int
 
 const (
 	MainView currentView = iota
 	PlaceView
 	ItemView
+	SelectPlace
 )
 
 type MainModel struct {
@@ -49,6 +57,8 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
+		WindowW = WSize(msg.Width)
+		WindowH = WSize(msg.Height)
 		m.help.Width = msg.Width
 
 	case tea.KeyMsg:

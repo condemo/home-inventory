@@ -13,6 +13,7 @@ func main() {
 		screens.New(),
 		screens.NewPlaceModel(),
 		screens.NewItemsView(),
+		screens.NewSelectPlaceModel(),
 	}
 	m := screens.ModelList[screens.MainView]
 	if _, err := tea.NewProgram(m).Run(); err != nil {

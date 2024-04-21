@@ -135,8 +135,11 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return ModelList[PlaceView].Update(nil)
 
 		case key.Matches(msg, m.keys.Quit):
-			m.quitting = true
-			return m, tea.Quit
+			// m.quitting = true
+			// return m, tea.Quit
+			// TODO: Revertir
+			ModelList[ItemView] = m
+			return ModelList[SelectPlace].Update(WindowH)
 		}
 		cmd = m.updateInputs(msg)
 	}
