@@ -3,6 +3,7 @@ package screens
 import (
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 
@@ -173,6 +174,7 @@ func (m AddItemsView) createItem() tea.Msg {
 	pi, err := strconv.ParseInt(m.inputs[inPlace].Value(), 10, 64)
 	if err != nil {
 		fmt.Println("error: invalid place id")
+		os.Exit(1)
 	}
 
 	item := &models.Cacharro{
