@@ -3,7 +3,6 @@ package screens
 import (
 	"fmt"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 
@@ -34,6 +33,7 @@ type AddItemsView struct {
 	keys       keymaps.ItemsKeymaps
 	inputs     []textinput.Model
 	focusIndex int
+	placeID    int64
 	quitting   bool
 }
 
@@ -146,8 +146,8 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 	case *models.Place:
-		id := fmt.Sprintf("%v", msg.ID)
-		m.inputs[inPlace].SetValue(id)
+		m.placeID = msg.ID
+		m.inputs[inPlace].SetValue(msg.Name)
 	}
 	cmd = m.updateInputs(msg)
 
@@ -171,16 +171,10 @@ func (m AddItemsView) createItem() tea.Msg {
 		log.Panic(err)
 	}
 
-	pi, err := strconv.ParseInt(m.inputs[inPlace].Value(), 10, 64)
-	if err != nil {
-		fmt.Println("\n\nerror: invalid place id")
-		os.Exit(1)
-	}
-
 	item := &models.Cacharro{
 		Name:    m.inputs[0].Value(),
 		Amount:  uint8(a),
-		PlaceID: pi,
+		PlaceID: m.placeID,
 		Tags:    m.inputs[3].Value(),
 	}
 
