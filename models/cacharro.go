@@ -1,6 +1,10 @@
 package models
 
-import "github.com/uptrace/bun"
+import (
+	"fmt"
+
+	"github.com/uptrace/bun"
+)
 
 type Cacharro struct {
 	bun.BaseModel `bun:"table:cacharros,alias:c"`
@@ -19,3 +23,7 @@ type Place struct {
 	Name string `bun:"name,unique"`
 	ID   int64  `bun:",pk,autoincrement"`
 }
+
+func (p Place) Title() string       { return fmt.Sprintf("%v", p.ID) }
+func (p Place) Description() string { return p.Name }
+func (p Place) FilterValue() string { return p.Name }
