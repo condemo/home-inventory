@@ -60,7 +60,9 @@ func NewItemsView() *AddItemsView {
 			t.CharLimit = 4
 			t.Width = 4
 		case inPlace:
-			t.Placeholder = "lugar"
+			// t.Placeholder = "lugar"
+			t.Prompt = "Place: "
+			t.SetValue("[ Select ]")
 			t.CharLimit = 100
 			t.Width = 100
 		case inTags:
@@ -98,6 +100,10 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 			if key.Matches(msg, m.keys.Down, m.keys.Submit) {
+				if key.Matches(msg, m.keys.Submit) && m.focusIndex == inPlace {
+					ModelList[ItemView] = m
+					return ModelList[SelectPlace].Update(WindowH)
+				}
 				if key.Matches(msg, m.keys.Down) {
 					if m.focusIndex == len(m.inputs)-1 {
 						m.focusIndex = inName
@@ -135,14 +141,14 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return ModelList[PlaceView].Update(nil)
 
 		case key.Matches(msg, m.keys.Quit):
-			// m.quitting = true
-			// return m, tea.Quit
-			// TODO: Revertir
-			ModelList[ItemView] = m
-			return ModelList[SelectPlace].Update(WindowH)
+			m.quitting = true
+			return m, tea.Quit
 		}
-		cmd = m.updateInputs(msg)
+	case *models.Place:
+		id := fmt.Sprintf("%v", msg.ID)
+		m.inputs[inPlace].SetValue(id)
 	}
+	cmd = m.updateInputs(msg)
 
 	return m, cmd
 }
@@ -158,16 +164,21 @@ func (m *AddItemsView) updateInputs(msg tea.Msg) tea.Cmd {
 }
 
 func (m AddItemsView) createItem() tea.Msg {
-	a, err := strconv.ParseUint(m.inputs[1].Value(), 10, 8)
+	a, err := strconv.ParseUint(m.inputs[inAmount].Value(), 10, 8)
 	if err != nil {
 		// TODO: Implementar notificaciones de errores y no salir de el programa
 		log.Panic(err)
 	}
+
+	pi, err := strconv.ParseInt(m.inputs[inPlace].Value(), 10, 64)
+	if err != nil {
+		fmt.Println("error: invalid place id")
+	}
+
 	item := &models.Cacharro{
-		Name:   m.inputs[0].Value(),
-		Amount: uint8(a),
-		// FIX: PlaceID esta hardcoded, hacerlo dinámico
-		PlaceID: 2,
+		Name:    m.inputs[0].Value(),
+		Amount:  uint8(a),
+		PlaceID: pi,
 		Tags:    m.inputs[3].Value(),
 	}
 

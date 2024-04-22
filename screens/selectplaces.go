@@ -1,25 +1,18 @@
 package screens
 
 import (
-	"fmt"
 	"log"
 
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
-	// "github.com/condemo/home-inventory/styles"
+	"github.com/condemo/home-inventory/keymaps"
+	"github.com/condemo/home-inventory/models"
 )
-
-type place struct {
-	name string
-	id   int64
-}
-
-func (p place) Title() string       { return fmt.Sprintf("%v", p.id) }
-func (p place) Description() string { return p.name }
-func (p place) FilterValue() string { return p.name }
 
 type SelectPlaceView struct {
 	placesList list.Model
+	keys       keymaps.SelectPlaceKeymap
 	quitting   bool
 }
 
@@ -31,15 +24,16 @@ func NewSelectPlaceModel() *SelectPlaceView {
 	}
 
 	for _, p := range pl {
-		items = append(items, place{
-			name: p.Name,
-			id:   p.ID,
-		})
+		items = append(items, p)
 	}
+
 	m := &SelectPlaceView{
 		placesList: list.New(items, list.NewDefaultDelegate(), 0, 0),
 	}
 	m.placesList.Title = "Select a Place"
+	m.keys = keymaps.SelectPlKeymap
+	m.placesList.DisableQuitKeybindings()
+	m.placesList.AdditionalShortHelpKeys = keymaps.SelectPlKeymap.ShortHelp
 
 	return m
 }
@@ -50,10 +44,15 @@ func (m SelectPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.String() {
-		case "ctrl+c", "esc":
-			m.quitting = true
-			return m, tea.Quit
+		switch {
+		case key.Matches(msg, m.keys.Back):
+			ModelList[SelectPlace] = m
+			return ModelList[ItemView].Update(nil)
+
+		case key.Matches(msg, m.keys.Select):
+			ModelList[SelectPlace] = m
+			si := m.placesList.SelectedItem().(models.Place)
+			return ModelList[ItemView].Update(&si)
 		}
 	case WSize:
 		m.placesList.SetHeight(int(msg) / 2)
