@@ -138,9 +138,6 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keys.Back):
 			return ModelList[MainView].Update(nil)
 
-		case key.Matches(msg, m.keys.AddPlace):
-			return ModelList[PlaceView].Update(nil)
-
 		case key.Matches(msg, m.keys.Quit):
 			m.quitting = true
 			return m, tea.Quit
