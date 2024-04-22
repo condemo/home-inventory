@@ -42,11 +42,11 @@ func (m AddPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch {
 		case key.Matches(msg, m.keys.Submit):
 			if m.nameEntry.Focused() {
-				m.CreatePlace()
-				return ModelList[ItemView].Update(nil)
+				p := m.CreatePlace()
+				return ModelList[SelectPlace].Update(p)
 			}
 		case key.Matches(msg, m.keys.Back):
-			return ModelList[ItemView].Update(nil)
+			return ModelList[SelectPlace].Update(nil)
 		}
 	}
 	if m.nameEntry.Focused() {
@@ -66,7 +66,7 @@ func (m AddPlaceView) View() string {
 		lipgloss.Center, m.nameEntry.View(), helpView)
 }
 
-func (m AddPlaceView) CreatePlace() {
+func (m AddPlaceView) CreatePlace() *models.Place {
 	p := new(models.Place)
 	p.Name = m.nameEntry.Value()
 
@@ -74,4 +74,6 @@ func (m AddPlaceView) CreatePlace() {
 	if err != nil {
 		log.Panic("error:", err)
 	}
+
+	return p
 }

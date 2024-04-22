@@ -45,6 +45,10 @@ func (m SelectPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
+		case key.Matches(msg, m.keys.Quit):
+			m.quitting = true
+			return m, tea.Quit
+
 		case key.Matches(msg, m.keys.Back):
 			ModelList[SelectPlace] = m
 			return ModelList[ItemView].Update(nil)
@@ -53,7 +57,14 @@ func (m SelectPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			ModelList[SelectPlace] = m
 			si := m.placesList.SelectedItem().(models.Place)
 			return ModelList[ItemView].Update(&si)
+
+		case key.Matches(msg, m.keys.Add):
+			ModelList[SelectPlace] = m
+			return ModelList[PlaceView].Update(nil)
 		}
+	case *models.Place:
+		m.placesList.InsertItem(len(m.placesList.Items()), msg)
+
 	case WSize:
 		m.placesList.SetHeight(int(msg) / 2)
 		m.placesList.SetWidth(200)
