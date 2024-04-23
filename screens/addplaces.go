@@ -25,6 +25,7 @@ func NewPlaceModel() *AddPlaceView {
 	input.Placeholder = "Insert Name..."
 	input.CharLimit = 100
 	input.Width = 100
+	input.Validate = validateLetters
 	input.Focus()
 	return &AddPlaceView{
 		nameEntry: input, keys: keymaps.PlacesKeys, help: help.New(),
