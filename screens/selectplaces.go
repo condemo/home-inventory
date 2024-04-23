@@ -24,7 +24,7 @@ func NewSelectPlaceModel() *SelectPlaceView {
 	}
 
 	for _, p := range pl {
-		items = append(items, p)
+		items = append(items, &p)
 	}
 
 	m := &SelectPlaceView{
@@ -55,8 +55,8 @@ func (m SelectPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, m.keys.Select):
 			ModelList[SelectPlace] = m
-			si := m.placesList.SelectedItem().(models.Place)
-			return ModelList[ItemView].Update(&si)
+			si := m.placesList.SelectedItem().(*models.Place)
+			return ModelList[ItemView].Update(si)
 
 		case key.Matches(msg, m.keys.Add):
 			ModelList[SelectPlace] = m
