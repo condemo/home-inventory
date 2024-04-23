@@ -5,6 +5,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
@@ -55,6 +56,7 @@ func NewItemsView() *AddItemsView {
 			t.Width = 30
 			t.PromptStyle = styles.InputFocusedStyle
 			t.TextStyle = styles.TextPrimaryStyle
+			t.Validate = validateLetters
 			t.Focus()
 		case inAmount:
 			t.Placeholder = "can."
@@ -66,10 +68,12 @@ func NewItemsView() *AddItemsView {
 			t.SetValue("[ Select ]")
 			t.CharLimit = 100
 			t.Width = 100
+			t.Validate = validateLetters
 		case inTags:
 			t.Placeholder = "tags"
 			t.CharLimit = 100
 			t.Width = 100
+			t.Validate = validateLetters
 		}
 		m.inputs[i] = t
 	}
@@ -226,6 +230,23 @@ func validateAmount(s string) error {
 	_, err := strconv.ParseInt(s, 10, 0)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func validateLetters(s string) error {
+	errStr := "error invalid character"
+
+	for _, r := range s {
+		if unicode.IsNumber(r) {
+			return fmt.Errorf(errStr)
+		}
+		if unicode.IsSpace(r) {
+			return nil
+		}
+		if !unicode.IsLetter(r) {
+			return fmt.Errorf(errStr)
+		}
 	}
 	return nil
 }
