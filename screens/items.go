@@ -169,10 +169,10 @@ func (m AddItemsView) createItem() tea.Msg {
 	}
 
 	item := &models.Cacharro{
-		Name:    m.inputs[0].Value(),
+		Name:    m.inputs[inName].Value(),
 		Amount:  uint8(a),
 		PlaceID: m.placeID,
-		Tags:    m.inputs[3].Value(),
+		Tags:    m.inputs[inTags].Value(),
 	}
 
 	// TODO: Manejar mejor los errores
