@@ -60,8 +60,8 @@ func NewItemsView() *AddItemsView {
 			t.Placeholder = "can."
 			t.CharLimit = 4
 			t.Width = 4
+			t.Validate = validateAmount
 		case inPlace:
-			// t.Placeholder = "lugar"
 			t.Prompt = "Place: "
 			t.SetValue("[ Select ]")
 			t.CharLimit = 100
@@ -220,4 +220,12 @@ func (m AddItemsView) View() string {
 		styles.HelpContainer.Render(helpView))
 
 	return styles.ContainerStyle.Render(mainContainer)
+}
+
+func validateAmount(s string) error {
+	_, err := strconv.ParseInt(s, 10, 0)
+	if err != nil {
+		return err
+	}
+	return nil
 }
