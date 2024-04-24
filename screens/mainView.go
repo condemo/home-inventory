@@ -89,7 +89,8 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, m.keys.Select):
 			ModelList[MainView] = m
-			return ModelList[ItemDetail].Update(nil)
+			r := m.itemTable.SelectedRow()
+			return ModelList[ItemDetail].Update(r)
 
 		case key.Matches(msg, m.keys.Help):
 			m.help.ShowAll = !m.help.ShowAll
