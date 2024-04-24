@@ -24,8 +24,11 @@ var (
 
 	HelpContainer = lipgloss.NewStyle().
 			MarginTop(3).Align(lipgloss.Center)
+	CenterContainer = lipgloss.NewStyle().Align(lipgloss.Center)
 
-	PlacesContainer = lipgloss.NewStyle()
+	PlacesContainer        = lipgloss.NewStyle()
+	SelectedContainerStyle = ContainerStyle.Copy().
+				BorderForeground(lipgloss.Color("205"))
 
 	SelectedStyle = lipgloss.NewStyle().
 			Foreground(Colors.TextPrimary).
