@@ -12,6 +12,7 @@ import (
 
 func NewTable(store data.Store) table.Model {
 	colums := []table.Column{
+		{Title: "ID", Width: 3},
 		{Title: "Nombre", Width: 20},
 		{Title: "Can.", Width: 4},
 		{Title: "Lugar", Width: 30},
@@ -26,8 +27,9 @@ func NewTable(store data.Store) table.Model {
 	rows := []table.Row{}
 	for i := range itemsList {
 		current := itemsList[i]
+		id := strconv.Itoa(int(current.ID))
 		rows = append(rows, table.Row{
-			current.Name, strconv.Itoa(int(current.Amount)), current.Place.Name, current.Tags,
+			id, current.Name, strconv.Itoa(int(current.Amount)), current.Place.Name, current.Tags,
 		},
 		)
 	}
