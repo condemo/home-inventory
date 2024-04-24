@@ -14,6 +14,7 @@ func main() {
 		screens.NewPlaceModel(),
 		screens.NewItemsView(),
 		screens.NewSelectPlaceModel(),
+		screens.NewItemDetailView(),
 	}
 	m := screens.ModelList[screens.MainView]
 	if _, err := tea.NewProgram(m).Run(); err != nil {
