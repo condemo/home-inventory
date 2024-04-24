@@ -85,6 +85,22 @@ func (m AddItemsView) Init() tea.Cmd {
 	return nil
 }
 
+func (m *AddItemsView) Next() {
+	if m.focusIndex == len(m.inputs)-1 {
+		m.focusIndex = inName
+	} else {
+		m.focusIndex++
+	}
+}
+
+func (m *AddItemsView) Previous() {
+	if m.focusIndex == inName {
+		m.focusIndex = len(m.inputs) - 1
+	} else {
+		m.focusIndex--
+	}
+}
+
 func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
@@ -98,11 +114,7 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return ModelList[MainView].Update(msg)
 			}
 			if key.Matches(msg, m.keys.Up) {
-				if m.focusIndex == inName {
-					m.focusIndex = len(m.inputs) - 1
-				} else {
-					m.focusIndex--
-				}
+				m.Previous()
 			}
 			if key.Matches(msg, m.keys.Down, m.keys.Submit) {
 				if key.Matches(msg, m.keys.Submit) && m.focusIndex == inPlace {
@@ -110,11 +122,7 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return ModelList[SelectPlace].Update(WindowH)
 				}
 				if key.Matches(msg, m.keys.Down) {
-					if m.focusIndex == len(m.inputs)-1 {
-						m.focusIndex = inName
-					} else {
-						m.focusIndex++
-					}
+					m.Next()
 				} else {
 					m.focusIndex++
 				}
@@ -146,10 +154,12 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.quitting = true
 			return m, tea.Quit
 		}
+
 	case *models.Place:
 		m.placeID = msg.ID
 		m.inputs[inPlace].SetValue(msg.Name)
 	}
+
 	cmd = m.updateInputs(msg)
 
 	return m, cmd
