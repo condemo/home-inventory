@@ -1,19 +1,28 @@
 package screens
 
 import (
+	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
+	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/condemo/home-inventory/keymaps"
+	"github.com/condemo/home-inventory/styles"
 )
 
 type ItemDetailView struct {
+	help     help.Model
 	keys     keymaps.ItemDetailKeyMap
+	item     table.Row
+	titles   []string
 	quitting bool
 }
 
 func NewItemDetailView() *ItemDetailView {
 	return &ItemDetailView{
-		keys: keymaps.ItemDetailKeys,
+		keys:   keymaps.ItemDetailKeys,
+		titles: []string{"ID", "Nombre", "Cantidad", "Lugar", "Tags"},
+		help:   help.New(),
 	}
 }
 
@@ -28,13 +37,33 @@ func (m ItemDetailView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.quitting = true
 			return m, tea.Quit
 		}
+	case table.Row:
+		m.item = msg
 	}
+
 	return m, cmd
 }
 
 func (m ItemDetailView) View() string {
+	var s string
+
 	if m.quitting {
 		return ""
 	}
-	return "Working"
+
+	for i := range m.item {
+		s += styles.TextPrimaryStyle.Render(m.titles[i])
+		s += "\n"
+		s += m.item[i]
+		s += "\n\n"
+	}
+
+	container := styles.CenterContainer.Render(s)
+
+	helpView := styles.HelpStyle.Render(m.help.View(m.keys))
+
+	return styles.SelectedContainerStyle.Render(
+		lipgloss.JoinVertical(
+			lipgloss.Center, container, helpView),
+	)
 }
