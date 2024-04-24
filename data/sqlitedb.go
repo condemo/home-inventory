@@ -74,6 +74,13 @@ func (s *SqliteStore) GetAllItems() ([]models.Cacharro, error) {
 	return il, err
 }
 
+func (s *SqliteStore) DeleteItem(id int64) error {
+	it := new(models.Cacharro)
+	_, err := s.db.NewDelete().Model(it).Where("id = ?", id).Exec(context.Background())
+
+	return err
+}
+
 func (s *SqliteStore) SavePlace(item *models.Place) error {
 	_, err := s.db.NewInsert().Model(item).Exec(context.TODO())
 	return err
