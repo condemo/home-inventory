@@ -1,6 +1,10 @@
 package screens
 
 import (
+	"fmt"
+	"os"
+	"strconv"
+
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/table"
@@ -28,6 +32,16 @@ func NewItemDetailView() *ItemDetailView {
 
 func (m ItemDetailView) Init() tea.Cmd { return nil }
 
+func (m ItemDetailView) delete() {
+	id, _ := strconv.ParseInt(m.item[0], 10, 64)
+
+	err := store.DeleteItem(id)
+	if err != nil {
+		fmt.Printf("error: %v", err)
+		os.Exit(1)
+	}
+}
+
 func (m ItemDetailView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
@@ -36,7 +50,16 @@ func (m ItemDetailView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keys.Quit):
 			m.quitting = true
 			return m, tea.Quit
+
+		case key.Matches(msg, m.keys.Back):
+			return ModelList[MainView].Update(nil)
+
+		case key.Matches(msg, m.keys.Del):
+			m.delete()
+			var deleted ItemDeleted = true
+			return ModelList[MainView].Update(deleted)
 		}
+
 	case table.Row:
 		m.item = msg
 	}
