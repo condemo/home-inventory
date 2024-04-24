@@ -17,7 +17,10 @@ import (
 
 var ModelList []tea.Model
 
-type WSize int
+type (
+	WSize       int
+	ItemDeleted bool
+)
 
 var (
 	WindowW WSize
@@ -53,6 +56,10 @@ func New() *MainModel {
 }
 
 func (m MainModel) Init() tea.Cmd { return nil }
+
+func (m *MainModel) reloadTable() {
+	m.itemTable = elements.NewTable(store)
+}
 
 func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
@@ -97,6 +104,9 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case models.Cacharro:
 		m.AddItem(msg)
+
+	case ItemDeleted:
+		m.reloadTable()
 	}
 	return m, cmd
 }
@@ -117,8 +127,9 @@ func (m MainModel) View() string {
 }
 
 func (m *MainModel) AddItem(c models.Cacharro) tea.Cmd {
+	id := strconv.Itoa(int(c.ID))
 	tr := table.Row{
-		c.Name, strconv.Itoa(int(c.Amount)), c.Place.Name, c.Tags,
+		id, c.Name, strconv.Itoa(int(c.Amount)), c.Place.Name, c.Tags,
 	}
 	rl := m.itemTable.Rows()
 	rl = append(rl, tr)
