@@ -1,8 +1,6 @@
 package screens
 
 import (
-	"strconv"
-
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/table"
@@ -18,8 +16,8 @@ import (
 var ModelList []tea.Model
 
 type (
-	WSize       int
-	ItemDeleted bool
+	WSize     int
+	DBUpdated bool
 )
 
 var (
@@ -102,10 +100,12 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keys.Help):
 			m.help.ShowAll = !m.help.ShowAll
 		}
-	case models.Cacharro:
-		m.AddItem(msg)
 
-	case ItemDeleted:
+		// TODO: eliminar este bloque, enviar DBUpdated desde AddItem
+	case models.Cacharro:
+		m.reloadTable()
+
+	case DBUpdated:
 		m.reloadTable()
 	}
 	return m, cmd
@@ -124,17 +124,4 @@ func (m MainModel) View() string {
 		lipgloss.Center, m.itemTable.View(), helpView)
 
 	return styles.ContainerStyle.Render(mainContainer)
-}
-
-func (m *MainModel) AddItem(c models.Cacharro) tea.Cmd {
-	id := strconv.Itoa(int(c.ID))
-	tr := table.Row{
-		id, c.Name, strconv.Itoa(int(c.Amount)), c.Place.Name, c.Tags,
-	}
-	rl := m.itemTable.Rows()
-	rl = append(rl, tr)
-
-	m.itemTable.SetRows(rl)
-
-	return nil
 }

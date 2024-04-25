@@ -9,6 +9,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
+	"github.com/charmbracelet/bubbles/table"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -35,6 +36,8 @@ type AddItemsView struct {
 	inputs     []textinput.Model
 	focusIndex int
 	placeID    int64
+	itemID     int64
+	update     bool
 	quitting   bool
 }
 
@@ -85,6 +88,24 @@ func (m AddItemsView) Init() tea.Cmd {
 	return nil
 }
 
+func (m *AddItemsView) inputsToItem() *models.Cacharro {
+	a, err := strconv.ParseUint(m.inputs[inAmount].Value(), 10, 8)
+	if err != nil {
+		// TODO: Implementar notificaciones de errores y no salir de el programa
+		log.Panic(err)
+	}
+
+	item := &models.Cacharro{
+		ID:      m.itemID,
+		Name:    m.inputs[inName].Value(),
+		Amount:  uint8(a),
+		PlaceID: m.placeID,
+		Tags:    m.inputs[inTags].Value(),
+	}
+
+	return item
+}
+
 func (m *AddItemsView) Next() {
 	if m.focusIndex == len(m.inputs)-1 {
 		m.focusIndex = inName
@@ -101,17 +122,42 @@ func (m *AddItemsView) Previous() {
 	}
 }
 
+func (m AddItemsView) createItem() {
+	item := m.inputsToItem()
+
+	// TODO: Manejar mejor los errores
+	err := store.SaveItem(item)
+	if err != nil {
+		log.Panic(err)
+	}
+}
+
+func (m *AddItemsView) UpdateItem() {
+	item := m.inputsToItem()
+
+	err := store.UpdateItem(item)
+	if err != nil {
+		log.Panic(err)
+	}
+}
+
 func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		// TODO: Cambiar de estilo el moverse por los elementos
 		case key.Matches(msg, m.keys.Up, m.keys.Down, m.keys.Submit):
 			if key.Matches(msg, m.keys.Submit) && m.focusIndex == len(m.inputs) {
-				msg := m.createItem()
-				ModelList[ItemView] = m
-				return ModelList[MainView].Update(msg)
+				var itemStatus DBUpdated
+				if m.update {
+					m.UpdateItem()
+					itemStatus = true
+					return ModelList[MainView].Update(itemStatus)
+				} else {
+					m.createItem()
+					itemStatus = true
+					return ModelList[MainView].Update(itemStatus)
+				}
 			}
 			if key.Matches(msg, m.keys.Up) {
 				m.Previous()
@@ -158,6 +204,14 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case *models.Place:
 		m.placeID = msg.ID
 		m.inputs[inPlace].SetValue(msg.Name)
+	case table.Row:
+		itemID, _ := strconv.ParseInt(msg[0], 10, 64)
+		m.inputs[inName].SetValue(msg[1])
+		m.inputs[inAmount].SetValue(msg[2])
+		m.inputs[inPlace].SetValue(msg[3])
+		m.inputs[inTags].SetValue(msg[4])
+		m.itemID = itemID
+		m.update = true
 	}
 
 	cmd = m.updateInputs(msg)
@@ -176,33 +230,6 @@ func (m *AddItemsView) updateInputs(msg tea.Msg) tea.Cmd {
 	}
 
 	return tea.Batch(cmds...)
-}
-
-func (m AddItemsView) createItem() tea.Msg {
-	a, err := strconv.ParseUint(m.inputs[inAmount].Value(), 10, 8)
-	if err != nil {
-		// TODO: Implementar notificaciones de errores y no salir de el programa
-		log.Panic(err)
-	}
-
-	item := &models.Cacharro{
-		Name:    m.inputs[inName].Value(),
-		Amount:  uint8(a),
-		PlaceID: m.placeID,
-		Tags:    m.inputs[inTags].Value(),
-	}
-
-	// TODO: Manejar mejor los errores
-	err = store.SaveItem(item)
-	if err != nil {
-		log.Panic(err)
-	}
-	item, err = store.GetItem(item.ID)
-	if err != nil {
-		log.Panic(err)
-	}
-
-	return *item
 }
 
 func (m AddItemsView) View() string {

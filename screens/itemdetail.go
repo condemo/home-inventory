@@ -54,9 +54,12 @@ func (m ItemDetailView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keys.Back):
 			return ModelList[MainView].Update(nil)
 
+		case key.Matches(msg, m.keys.Mod):
+			return ModelList[ItemView].Update(m.item)
+
 		case key.Matches(msg, m.keys.Del):
 			m.delete()
-			var deleted ItemDeleted = true
+			var deleted DBUpdated = true
 			return ModelList[MainView].Update(deleted)
 		}
 
