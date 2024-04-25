@@ -74,6 +74,14 @@ func (s *SqliteStore) GetAllItems() ([]models.Cacharro, error) {
 	return il, err
 }
 
+func (s *SqliteStore) UpdateItem(item *models.Cacharro) error {
+	_, err := s.db.NewUpdate().Model(item).
+		Where("id = ?", item.ID).OmitZero().
+		Returning("*").Exec(context.TODO())
+
+	return err
+}
+
 func (s *SqliteStore) DeleteItem(id int64) error {
 	it := new(models.Cacharro)
 	_, err := s.db.NewDelete().Model(it).Where("id = ?", id).Exec(context.Background())
