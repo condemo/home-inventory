@@ -9,7 +9,6 @@ import (
 	"github.com/condemo/home-inventory/data"
 	"github.com/condemo/home-inventory/elements"
 	"github.com/condemo/home-inventory/keymaps"
-	"github.com/condemo/home-inventory/models"
 	"github.com/condemo/home-inventory/styles"
 )
 
@@ -100,10 +99,6 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keys.Help):
 			m.help.ShowAll = !m.help.ShowAll
 		}
-
-		// TODO: eliminar este bloque, enviar DBUpdated desde AddItem
-	case models.Cacharro:
-		m.reloadTable()
 
 	case DBUpdated:
 		m.reloadTable()
