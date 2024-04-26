@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/condemo/home-inventory/elements"
 	"github.com/condemo/home-inventory/keymaps"
 	"github.com/condemo/home-inventory/models"
 )
@@ -70,7 +71,7 @@ func (m AddPlaceView) View() string {
 	}
 
 	if m.err != nil {
-		err = m.err.Error()
+		err = elements.NewErrorView(m.err)
 	}
 
 	helpView := m.help.View(m.keys)
