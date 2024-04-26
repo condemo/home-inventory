@@ -50,7 +50,7 @@ func init() {
 			ANSI:      "4",
 		},
 		ErrPrimary: lipgloss.CompleteColor{
-			TrueColor: "af0000",
+			TrueColor: "#af0000",
 			ANSI256:   "124",
 			ANSI:      "1",
 		},
