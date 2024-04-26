@@ -7,10 +7,11 @@ import (
 type PlacesKeymaps struct {
 	Back   key.Binding
 	Submit key.Binding
+	Quit   key.Binding
 }
 
 func (k PlacesKeymaps) ShortHelp() []key.Binding {
-	return []key.Binding{k.Back, k.Submit}
+	return []key.Binding{k.Back, k.Submit, k.Quit}
 }
 
 func (k PlacesKeymaps) FullHelp() [][]key.Binding {
@@ -25,5 +26,9 @@ var PlacesKeys = PlacesKeymaps{
 	Submit: key.NewBinding(
 		key.WithKeys("enter"),
 		key.WithHelp("enter", "create"),
+	),
+	Quit: key.NewBinding(
+		key.WithKeys("ctrl+c"),
+		key.WithHelp("ctrl+c", "quit"),
 	),
 }

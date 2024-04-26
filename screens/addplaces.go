@@ -55,6 +55,9 @@ func (m AddPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case key.Matches(msg, m.keys.Back):
 			return ModelList[SelectPlace].Update(nil)
+		case key.Matches(msg, m.keys.Quit):
+			m.quitting = true
+			return m, tea.Quit
 		}
 	}
 	if m.nameEntry.Focused() {
