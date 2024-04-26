@@ -55,8 +55,12 @@ func (m SelectPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, m.keys.Select):
 			ModelList[SelectPlace] = m
-			si := m.placesList.SelectedItem().(*models.Place)
-			return ModelList[ItemView].Update(si)
+			if m.placesList.SelectedItem() == nil {
+				return ModelList[ItemView].Update(nil)
+			} else {
+				si := m.placesList.SelectedItem().(*models.Place)
+				return ModelList[ItemView].Update(si)
+			}
 
 		case key.Matches(msg, m.keys.Add):
 			ModelList[SelectPlace] = m
