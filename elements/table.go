@@ -19,11 +19,11 @@ func NewTable(store data.Store) table.Model {
 		{Title: "Tags", Width: 25},
 	}
 
-	// TODO: Limpiar y buscar lugar definitivo para cargar la DB
 	itemsList, err := store.GetAllItems()
 	if err != nil {
 		log.Panic(err)
 	}
+
 	rows := []table.Row{}
 	for i := range itemsList {
 		current := itemsList[i]
