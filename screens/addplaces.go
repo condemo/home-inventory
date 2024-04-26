@@ -1,7 +1,7 @@
 package screens
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
@@ -13,6 +13,7 @@ import (
 )
 
 type AddPlaceView struct {
+	err       error
 	help      help.Model
 	keys      keymaps.PlacesKeymaps
 	nameEntry textinput.Model
@@ -43,8 +44,13 @@ func (m AddPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch {
 		case key.Matches(msg, m.keys.Submit):
 			if m.nameEntry.Focused() {
-				p := m.CreatePlace()
-				return ModelList[SelectPlace].Update(p)
+				p, err := m.CreatePlace()
+				if err != nil {
+					m.err = err
+					return m, cmd
+				} else {
+					return ModelList[SelectPlace].Update(p)
+				}
 			}
 		case key.Matches(msg, m.keys.Back):
 			return ModelList[SelectPlace].Update(nil)
@@ -58,23 +64,33 @@ func (m AddPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m AddPlaceView) View() string {
+	err := ""
 	if m.quitting {
 		return ""
 	}
 
-	helpView := m.help.View(m.keys)
-	return lipgloss.JoinVertical(
-		lipgloss.Center, m.nameEntry.View(), helpView)
-}
-
-func (m AddPlaceView) CreatePlace() *models.Place {
-	p := new(models.Place)
-	p.Name = m.nameEntry.Value()
-
-	err := store.SavePlace(p)
-	if err != nil {
-		log.Panic("error:", err)
+	if m.err != nil {
+		err = m.err.Error()
 	}
 
-	return p
+	helpView := m.help.View(m.keys)
+	return lipgloss.JoinVertical(
+		lipgloss.Center, m.nameEntry.View(), err, helpView)
+}
+
+func (m *AddPlaceView) CreatePlace() (*models.Place, error) {
+	p := new(models.Place)
+
+	if m.nameEntry.Value() == "" {
+		return nil, fmt.Errorf("error: empty place name")
+	}
+
+	p.Name = m.nameEntry.Value()
+	err := store.SavePlace(p)
+	if err != nil {
+		return nil, fmt.Errorf("database error: %s", err)
+	}
+	m.err = nil
+
+	return p, nil
 }
