@@ -2,7 +2,6 @@ package screens
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 	"unicode"
@@ -13,6 +12,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/condemo/home-inventory/elements"
 	"github.com/condemo/home-inventory/keymaps"
 	"github.com/condemo/home-inventory/models"
 	"github.com/condemo/home-inventory/styles"
@@ -31,6 +31,7 @@ const (
 )
 
 type AddItemsView struct {
+	err        error
 	help       help.Model
 	keys       keymaps.ItemsKeymaps
 	inputs     []textinput.Model
@@ -89,11 +90,7 @@ func (m AddItemsView) Init() tea.Cmd {
 }
 
 func (m *AddItemsView) inputsToItem() *models.Cacharro {
-	a, err := strconv.ParseUint(m.inputs[inAmount].Value(), 10, 8)
-	if err != nil {
-		// TODO: Implementar notificaciones de errores y no salir de el programa
-		log.Panic(err)
-	}
+	a, _ := strconv.ParseUint(m.inputs[inAmount].Value(), 10, 8)
 
 	item := &models.Cacharro{
 		ID:      m.itemID,
@@ -122,14 +119,21 @@ func (m *AddItemsView) Previous() {
 	}
 }
 
-func (m AddItemsView) createItem() {
+func (m *AddItemsView) createItem() {
 	item := m.inputsToItem()
+	if item.Name == "" {
+		m.err = fmt.Errorf("error: empty name input")
+		m.focusIndex = inName - 1
+		return
+	}
 
-	// TODO: Manejar mejor los errores
 	err := store.SaveItem(item)
 	if err != nil {
-		log.Panic(err)
+		m.err = fmt.Errorf("error: database error")
+		m.focusIndex = inName - 1
+		return
 	}
+	m.err = nil
 }
 
 func (m *AddItemsView) UpdateItem() {
@@ -137,8 +141,12 @@ func (m *AddItemsView) UpdateItem() {
 
 	err := store.UpdateItem(item)
 	if err != nil {
-		log.Panic(err)
+		m.err = fmt.Errorf("error: database error")
+		m.focusIndex = inName - 1
+		return
 	}
+
+	m.err = nil
 }
 
 func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -155,8 +163,10 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return ModelList[MainView].Update(itemStatus)
 				} else {
 					m.createItem()
-					itemStatus = true
-					return ModelList[MainView].Update(itemStatus)
+					if m.err == nil {
+						itemStatus = true
+						return ModelList[MainView].Update(itemStatus)
+					}
 				}
 			}
 			if key.Matches(msg, m.keys.Up) {
@@ -252,6 +262,11 @@ func (m AddItemsView) View() string {
 	}
 
 	fmt.Fprintf(&b, "\n\n%s\n\n", *button)
+
+	if m.err != nil {
+		b.WriteString("\n")
+		b.WriteString(elements.NewErrorView(m.err))
+	}
 
 	helpView := m.help.View(m.keys)
 
