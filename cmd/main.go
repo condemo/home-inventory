@@ -17,7 +17,7 @@ func main() {
 		screens.NewItemDetailView(),
 	}
 	m := screens.ModelList[screens.MainView]
-	if _, err := tea.NewProgram(m).Run(); err != nil {
+	if _, err := tea.NewProgram(m, tea.WithAltScreen()).Run(); err != nil {
 		fmt.Println("error:", err)
 		os.Exit(1)
 	}
