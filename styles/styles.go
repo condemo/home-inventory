@@ -12,7 +12,33 @@ type ColorPalette struct {
 	HelpPrimary    lipgloss.CompleteColor
 }
 
-var Colors ColorPalette
+var Colors = ColorPalette{
+	SelectPrimary: lipgloss.CompleteColor{
+		TrueColor: "#5f00ff",
+		ANSI256:   "57",
+		ANSI:      "4",
+	},
+	ErrPrimary: lipgloss.CompleteColor{
+		TrueColor: "#af0000",
+		ANSI256:   "124",
+		ANSI:      "1",
+	},
+	WarningPrimary: lipgloss.CompleteColor{
+		TrueColor: "#d75f00",
+		ANSI256:   "166",
+		ANSI:      "11",
+	},
+	TextPrimary: lipgloss.CompleteColor{
+		TrueColor: "#ffffaf",
+		ANSI256:   "229",
+		ANSI:      "11",
+	},
+	HelpPrimary: lipgloss.CompleteColor{
+		TrueColor: "#ffffaf",
+		ANSI256:   "229",
+		ANSI:      "11",
+	},
+}
 
 var (
 	HelpStyle = lipgloss.NewStyle().
@@ -30,6 +56,11 @@ var (
 	SelectedContainerStyle = ContainerStyle.Copy().
 				BorderForeground(lipgloss.Color("205"))
 
+	ErrorContainer = lipgloss.NewStyle().
+			Align(lipgloss.Center).BorderForeground(Colors.ErrPrimary).
+			BorderBackground(Colors.ErrPrimary).Width(40).
+			BorderStyle(lipgloss.RoundedBorder()).Background(Colors.ErrPrimary)
+
 	SelectedStyle = lipgloss.NewStyle().
 			Foreground(Colors.TextPrimary).
 			Background(Colors.SelectPrimary)
@@ -41,33 +72,3 @@ var (
 	InputFocusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("57"))
 	CursorSelectStyle = InputFocusedStyle.Copy()
 )
-
-func init() {
-	Colors = ColorPalette{
-		SelectPrimary: lipgloss.CompleteColor{
-			TrueColor: "#5f00ff",
-			ANSI256:   "57",
-			ANSI:      "4",
-		},
-		ErrPrimary: lipgloss.CompleteColor{
-			TrueColor: "#af0000",
-			ANSI256:   "124",
-			ANSI:      "1",
-		},
-		WarningPrimary: lipgloss.CompleteColor{
-			TrueColor: "#d75f00",
-			ANSI256:   "166",
-			ANSI:      "11",
-		},
-		TextPrimary: lipgloss.CompleteColor{
-			TrueColor: "#ffffaf",
-			ANSI256:   "229",
-			ANSI:      "11",
-		},
-		HelpPrimary: lipgloss.CompleteColor{
-			TrueColor: "#ffffaf",
-			ANSI256:   "229",
-			ANSI:      "11",
-		},
-	}
-}
