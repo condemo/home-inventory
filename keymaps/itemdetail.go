@@ -19,8 +19,8 @@ func (k ItemDetailKeyMap) FullHelp() [][]key.Binding { return nil }
 
 var ItemDetailKeys = ItemDetailKeyMap{
 	Back: key.NewBinding(
-		key.WithKeys("esc"),
-		key.WithHelp("esc", "go back"),
+		key.WithKeys("esc", "q", "enter"),
+		key.WithHelp("esc/q/enter", "go back"),
 	),
 	Mod: key.NewBinding(
 		key.WithKeys("a"),
