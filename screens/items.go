@@ -214,6 +214,8 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case *models.Place:
 		m.placeID = msg.ID
 		m.inputs[inPlace].SetValue(msg.Name)
+		m.inputs[inPlace].CursorEnd()
+
 	case table.Row:
 		itemID, _ := strconv.ParseInt(msg[0], 10, 64)
 		m.inputs[inName].SetValue(msg[1])
