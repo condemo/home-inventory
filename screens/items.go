@@ -104,7 +104,7 @@ func (m *AddItemsView) inputsToItem() *models.Cacharro {
 }
 
 func (m *AddItemsView) Next() {
-	if m.focusIndex == len(m.inputs)-1 {
+	if m.focusIndex == len(m.inputs) {
 		m.focusIndex = inName
 	} else {
 		m.focusIndex++
@@ -113,7 +113,7 @@ func (m *AddItemsView) Next() {
 
 func (m *AddItemsView) Previous() {
 	if m.focusIndex == inName {
-		m.focusIndex = len(m.inputs) - 1
+		m.focusIndex = len(m.inputs)
 	} else {
 		m.focusIndex--
 	}
@@ -181,9 +181,6 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				} else {
 					m.focusIndex++
 				}
-			}
-			if key.Matches(msg, m.keys.Down) && m.focusIndex >= len(m.inputs) {
-				m.focusIndex = inName
 			}
 
 			cmds := make([]tea.Cmd, len(m.inputs))
