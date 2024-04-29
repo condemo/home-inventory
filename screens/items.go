@@ -145,7 +145,6 @@ func (m *AddItemsView) UpdateItem() {
 		m.focusIndex = inName - 1
 		return
 	}
-
 	m.err = nil
 }
 
@@ -214,7 +213,9 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case *models.Place:
 		m.placeID = msg.ID
 		m.inputs[inPlace].SetValue(msg.Name)
-		m.inputs[inPlace].CursorEnd()
+		m.inputs[inPlace].Blur()
+		m.focusIndex++
+		m.inputs[inTags].Focus()
 
 	case table.Row:
 		itemID, _ := strconv.ParseInt(msg[0], 10, 64)
