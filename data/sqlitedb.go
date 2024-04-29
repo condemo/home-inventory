@@ -3,6 +3,8 @@ package data
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"os"
 
 	"github.com/condemo/home-inventory/models"
 	"github.com/uptrace/bun"
@@ -15,9 +17,20 @@ type SqliteStore struct {
 }
 
 func createSqliteStore() (*sql.DB, error) {
-	sqldb, err := sql.Open(
-		sqliteshim.ShimName, "file:inventory.db?cache=shared",
-	)
+	dir, err := os.UserConfigDir()
+	if err != nil {
+		return nil, err
+	}
+
+	sharedDir := dir + "/home-inventory"
+
+	if _, err = os.Stat(sharedDir); os.IsNotExist(err) {
+		os.Mkdir(sharedDir, os.FileMode(0o744))
+	}
+
+	dsn := fmt.Sprintf("file:%s/inventory.db?cache=shared", sharedDir)
+
+	sqldb, err := sql.Open(sqliteshim.ShimName, dsn)
 	if err != nil {
 		return nil, err
 	}
