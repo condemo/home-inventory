@@ -222,6 +222,7 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.inputs[inTags].SetValue(msg[4])
 		m.itemID = itemID
 		m.update = true
+		m.inputs[inName].Focus()
 	}
 
 	cmd = m.updateInputs(msg)
