@@ -56,8 +56,8 @@ func NewItemsView() *AddItemsView {
 		switch i {
 		case inName:
 			t.Placeholder = "nombre"
-			t.CharLimit = 25
-			t.Width = 30
+			t.CharLimit = 30
+			t.Width = 25
 			t.PromptStyle = styles.InputFocusedStyle
 			t.TextStyle = styles.TextPrimaryStyle
 			t.Validate = validateLetters
@@ -70,13 +70,13 @@ func NewItemsView() *AddItemsView {
 		case inPlace:
 			t.Prompt = "Place: "
 			t.SetValue("[ Select ]")
-			t.CharLimit = 100
-			t.Width = 100
+			t.CharLimit = 40
+			t.Width = 25
 			t.Validate = validateLetters
 		case inTags:
 			t.Placeholder = "tags"
-			t.CharLimit = 100
-			t.Width = 100
+			t.CharLimit = 80
+			t.Width = 80
 			t.Validate = validateLetters
 		}
 		m.inputs[i] = t
@@ -250,19 +250,26 @@ func (m AddItemsView) View() string {
 		return ""
 	}
 
-	for i := range m.inputs {
-		b.WriteString(m.inputs[i].View())
-		if i < len(m.inputs)-1 {
-			b.WriteRune('\n')
-		}
-	}
+	// for i := range m.inputs {
+	// 	b.WriteString(styles.InputContainer.Render(m.inputs[i].View()))
+	// 	if i < len(m.inputs)-1 {
+	// 		b.WriteRune('\n')
+	// 	}
+	// }
+	inCont := lipgloss.JoinVertical(
+		lipgloss.Left,
+		styles.InputContainer.Render(m.inputs[inName].View()),
+		styles.InputContainer.Render(m.inputs[inAmount].View()),
+		styles.InputContainer.Render(m.inputs[inPlace].View()),
+		styles.InputContainer.Render(m.inputs[inTags].View()),
+	)
 
 	button := &blurredButton
 	if m.focusIndex == len(m.inputs) {
 		button = &focusedButton
 	}
 
-	fmt.Fprintf(&b, "\n\n%s\n\n", *button)
+	fmt.Fprintf(&b, "%s", *button)
 
 	if m.err != nil {
 		b.WriteString("\n")
@@ -272,7 +279,8 @@ func (m AddItemsView) View() string {
 	helpView := m.help.View(m.keys)
 
 	mainContainer := lipgloss.JoinVertical(
-		lipgloss.Left,
+		lipgloss.Center,
+		inCont,
 		b.String(),
 		styles.HelpContainer.Render(helpView))
 
