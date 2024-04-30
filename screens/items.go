@@ -71,7 +71,7 @@ func NewItemsView() *AddItemsView {
 			t.Width = 4
 			t.Validate = validateAmount
 		case inPlace:
-			t.Prompt = "Place: "
+			t.Prompt = "Lugar: "
 			t.SetValue("[ Select ]")
 			t.CharLimit = 40
 			t.Width = 25
