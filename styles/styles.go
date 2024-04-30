@@ -48,8 +48,8 @@ var (
 	ContainerStyle = lipgloss.NewStyle().
 			Padding(1).MarginLeft(3).BorderStyle(lipgloss.RoundedBorder())
 
-	HelpContainer = lipgloss.NewStyle().
-			MarginTop(3).Align(lipgloss.Center)
+	HelpContainer = HelpStyle.Copy().
+			MarginTop(2).Align(lipgloss.Center)
 	CenterContainer = lipgloss.NewStyle().Align(lipgloss.Center)
 
 	PlacesContainer        = lipgloss.NewStyle()
@@ -58,8 +58,16 @@ var (
 
 	ErrorContainer = lipgloss.NewStyle().
 			Align(lipgloss.Center).BorderForeground(Colors.ErrPrimary).
-			BorderBackground(Colors.ErrPrimary).Width(40).
+			BorderBackground(Colors.ErrPrimary).Width(40).MarginTop(1).
 			BorderStyle(lipgloss.RoundedBorder()).Background(Colors.ErrPrimary)
+
+	MainInputContainer = CenterContainer.Copy().
+				Padding(1, 0).Margin(2).BorderStyle(lipgloss.RoundedBorder()).
+				BorderForeground(Colors.SelectPrimary)
+
+	InputContainer = CenterContainer.Copy().
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("57"))
 
 	SelectedStyle = lipgloss.NewStyle().
 			Foreground(Colors.TextPrimary).
