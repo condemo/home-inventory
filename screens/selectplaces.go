@@ -12,9 +12,10 @@ import (
 )
 
 type SelectPlaceView struct {
-	placesList list.Model
-	keys       keymaps.SelectPlaceKeymap
-	quitting   bool
+	placesList   list.Model
+	keys         keymaps.SelectPlaceKeymap
+	filterActive bool
+	quitting     bool
 }
 
 func NewSelectPlaceModel() *SelectPlaceView {
@@ -51,8 +52,11 @@ func (m SelectPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case key.Matches(msg, m.keys.Back):
-			ModelList[SelectPlace] = m
-			return ModelList[ItemView].Update(nil)
+			if !m.filterActive {
+				return ModelList[ItemView].Update(nil)
+			} else {
+				m.filterActive = false
+			}
 
 		case key.Matches(msg, m.keys.Select):
 			ModelList[SelectPlace] = m
@@ -66,6 +70,9 @@ func (m SelectPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keys.Add):
 			ModelList[SelectPlace] = m
 			return ModelList[PlaceView].Update(nil)
+
+		case key.Matches(msg, m.placesList.KeyMap.Filter):
+			m.filterActive = true
 		}
 	case *models.Place:
 		m.placesList.InsertItem(len(m.placesList.Items()), msg)
