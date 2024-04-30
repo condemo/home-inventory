@@ -19,7 +19,10 @@ import (
 )
 
 var (
-	focusedButton = styles.InputFocusedStyle.Copy().Render("[ Submit ]")
+	focusedButton = styles.InputFocusedStyle.Copy().
+			Background(styles.Colors.SelectPrimary).
+			Foreground(styles.Colors.TextPrimary).
+			Render("[ Submit ]")
 	blurredButton = fmt.Sprintf("[ %s ]", styles.BlurredStyle.Render("Submit"))
 )
 
