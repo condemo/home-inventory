@@ -92,6 +92,7 @@ func (m ItemDetailView) View() string {
 
 	container := styles.CenterContainer.Render(s)
 
+	m.help.Styles.ShortKey = styles.HelpStyle
 	helpView := styles.HelpStyle.Render(m.help.View(m.keys))
 
 	return styles.SelectedContainerStyle.Render(

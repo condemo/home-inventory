@@ -8,6 +8,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/condemo/home-inventory/keymaps"
 	"github.com/condemo/home-inventory/models"
+	"github.com/condemo/home-inventory/styles"
 )
 
 type SelectPlaceView struct {
@@ -82,5 +83,9 @@ func (m SelectPlaceView) View() string {
 	if m.quitting {
 		return ""
 	}
+
+	m.placesList.Help.Styles.ShortKey = styles.HelpStyle
+	m.placesList.Help.Styles.FullKey = styles.HelpStyle
+
 	return m.placesList.View()
 }

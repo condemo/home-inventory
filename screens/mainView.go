@@ -112,6 +112,7 @@ func (m MainModel) View() string {
 	}
 
 	m.help.Styles.FullKey = styles.HelpStyle
+	m.help.Styles.ShortKey = styles.HelpStyle
 
 	helpView := m.help.View(m.keys)
 

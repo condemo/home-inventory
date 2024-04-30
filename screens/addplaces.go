@@ -80,7 +80,9 @@ func (m AddPlaceView) View() string {
 
 	entry := styles.MainInputContainer.Render(m.nameEntry.View())
 
+	m.help.Styles.ShortKey = styles.HelpStyle
 	helpView := m.help.View(m.keys)
+
 	return lipgloss.JoinVertical(
 		lipgloss.Center, entry, err, helpView)
 }

@@ -253,12 +253,6 @@ func (m AddItemsView) View() string {
 		return ""
 	}
 
-	// for i := range m.inputs {
-	// 	b.WriteString(styles.InputContainer.Render(m.inputs[i].View()))
-	// 	if i < len(m.inputs)-1 {
-	// 		b.WriteRune('\n')
-	// 	}
-	// }
 	inCont := lipgloss.JoinVertical(
 		lipgloss.Left,
 		styles.InputContainer.Render(m.inputs[inName].View()),
@@ -279,6 +273,7 @@ func (m AddItemsView) View() string {
 		b.WriteString(elements.NewErrorView(m.err))
 	}
 
+	m.help.Styles.ShortKey = styles.HelpStyle
 	helpView := m.help.View(m.keys)
 
 	mainContainer := lipgloss.JoinVertical(
