@@ -11,6 +11,7 @@ import (
 	"github.com/condemo/home-inventory/elements"
 	"github.com/condemo/home-inventory/keymaps"
 	"github.com/condemo/home-inventory/models"
+	"github.com/condemo/home-inventory/styles"
 )
 
 type AddPlaceView struct {
@@ -77,9 +78,11 @@ func (m AddPlaceView) View() string {
 		err = elements.NewErrorView(m.err)
 	}
 
+	entry := styles.MainInputContainer.Render(m.nameEntry.View())
+
 	helpView := m.help.View(m.keys)
 	return lipgloss.JoinVertical(
-		lipgloss.Center, m.nameEntry.View(), err, helpView)
+		lipgloss.Center, entry, err, helpView)
 }
 
 func (m *AddPlaceView) CreatePlace() (*models.Place, error) {
