@@ -15,6 +15,8 @@ type Store interface {
 	SavePlace(*models.Place) error
 	GetPlace(int64) (*models.Place, error)
 	GetAllPlaces() ([]models.Place, error)
+	DeletePlace(int64) error
+	UpdatePlace(*models.Place) error
 }
 
 func InitDatabase() Store {
