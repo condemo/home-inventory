@@ -58,6 +58,15 @@ func (m *SelectPlaceView) Reload() {
 	m.placesList.SetItems(items)
 }
 
+func (m *SelectPlaceView) deletePlace() {
+	current := m.placesList.SelectedItem().(*models.Place)
+	err := store.DeletePlace(current.ID)
+	if err != nil {
+		log.Panic(err)
+	}
+	m.placesList.RemoveItem(m.placesList.Cursor())
+}
+
 func (m SelectPlaceView) Init() tea.Cmd { return nil }
 
 func (m SelectPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -90,7 +99,7 @@ func (m SelectPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return ModelList[PlaceView].Update(nil)
 
 		case key.Matches(msg, m.keys.Delete):
-			// TODO: Impementar, si !filterActive
+			m.deletePlace()
 
 		case key.Matches(msg, m.keys.Modify):
 			if !m.filterActive {
