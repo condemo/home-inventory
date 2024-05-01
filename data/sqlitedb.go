@@ -125,7 +125,7 @@ func (s *SqliteStore) GetPlace(id int64) (*models.Place, error) {
 
 func (s *SqliteStore) DeletePlace(id int64) error {
 	pl := new(models.Place)
-	_, err := s.db.NewUpdate().Model(pl).
+	_, err := s.db.NewDelete().Model(pl).
 		Where("id = ?", id).Exec(context.Background())
 
 	return err
