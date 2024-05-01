@@ -95,8 +95,10 @@ func (m SelectPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case key.Matches(msg, m.keys.Add):
-			ModelList[SelectPlace] = m
-			return ModelList[PlaceView].Update(nil)
+			if !m.filterActive {
+				ModelList[SelectPlace] = m
+				return ModelList[PlaceView].Update(nil)
+			}
 
 		case key.Matches(msg, m.keys.Delete):
 			m.deletePlace()

@@ -31,8 +31,8 @@ var SelectPlKeymap = SelectPlaceKeymap{
 		key.WithHelp("enter/space", "select"),
 	),
 	Add: key.NewBinding(
-		key.WithKeys("ctrl+a"),
-		key.WithHelp("ctrl+a", "add place"),
+		key.WithKeys("a"),
+		key.WithHelp("a", "add place"),
 	),
 	Delete: key.NewBinding(
 		key.WithKeys("x"),
