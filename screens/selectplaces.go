@@ -36,8 +36,26 @@ func NewSelectPlaceModel() *SelectPlaceView {
 	m.keys = keymaps.SelectPlKeymap
 	m.placesList.DisableQuitKeybindings()
 	m.placesList.AdditionalShortHelpKeys = keymaps.SelectPlKeymap.ShortHelp
+	m.placesList.AdditionalFullHelpKeys = keymaps.SelectPlKeymap.FullHelp
 
 	return m
+}
+
+func (m *SelectPlaceView) Reload() {
+	var items []list.Item
+	pl, err := store.GetAllPlaces()
+	if err != nil {
+		log.Panic(err)
+	}
+	for i := range m.placesList.Items() {
+		m.placesList.RemoveItem(i)
+	}
+
+	for _, p := range pl {
+		items = append(items, &p)
+	}
+
+	m.placesList.SetItems(items)
 }
 
 func (m SelectPlaceView) Init() tea.Cmd { return nil }
@@ -71,11 +89,24 @@ func (m SelectPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			ModelList[SelectPlace] = m
 			return ModelList[PlaceView].Update(nil)
 
+		case key.Matches(msg, m.keys.Delete):
+			// TODO: Impementar, si !filterActive
+
+		case key.Matches(msg, m.keys.Modify):
+			if !m.filterActive {
+				ModelList[SelectPlace] = m
+				si := m.placesList.SelectedItem().(*models.Place)
+				return ModelList[PlaceView].Update(si)
+			}
+
 		case key.Matches(msg, m.placesList.KeyMap.Filter):
 			m.filterActive = true
 		}
 	case *models.Place:
 		m.placesList.InsertItem(len(m.placesList.Items()), msg)
+
+	case DBUpdated:
+		m.Reload()
 
 	case WSize:
 		m.placesList.SetHeight(int(msg) / 2)

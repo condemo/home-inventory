@@ -19,6 +19,8 @@ type AddPlaceView struct {
 	help      help.Model
 	keys      keymaps.PlacesKeymaps
 	nameEntry textinput.Model
+	placeID   int64
+	update    bool
 	quitting  bool
 }
 
@@ -46,25 +48,43 @@ func (m AddPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch {
 		case key.Matches(msg, m.keys.Submit):
 			if m.nameEntry.Focused() {
-				p, err := m.CreatePlace()
-				if err != nil {
-					m.err = err
-					return m, cmd
+				if m.update {
+					m.updatePlace(&models.Place{ID: m.placeID, Name: m.nameEntry.Value()})
+					if m.err == nil {
+						return ModelList[SelectPlace].Update(DBUpdated(true))
+					}
 				} else {
-					return ModelList[SelectPlace].Update(p)
+					p, err := m.CreatePlace()
+					if err != nil {
+						m.err = err
+						return m, cmd
+					} else {
+						return ModelList[SelectPlace].Update(p)
+					}
 				}
 			}
 		case key.Matches(msg, m.keys.Back):
 			return ModelList[SelectPlace].Update(nil)
+
 		case key.Matches(msg, m.keys.Quit):
 			m.quitting = true
 			return m, tea.Quit
+
 		}
+
+	case *models.Place:
+		m.update = true
+		m.nameEntry.SetValue(msg.Name)
+		m.nameEntry.CursorEnd()
+		// m.nameEntry.Focus()
+		m.placeID = msg.ID
 	}
+
 	if m.nameEntry.Focused() {
 		m.nameEntry, cmd = m.nameEntry.Update(msg)
 		return m, cmd
 	}
+
 	return m, cmd
 }
 
@@ -102,4 +122,15 @@ func (m *AddPlaceView) CreatePlace() (*models.Place, error) {
 	m.err = nil
 
 	return p, nil
+}
+
+func (m *AddPlaceView) updatePlace(pl *models.Place) {
+	if pl.Name == "" {
+		m.err = fmt.Errorf("error: %s", "empty name entry")
+		return
+	}
+	err := store.UpdatePlace(pl)
+	if err != nil {
+		m.err = fmt.Errorf("database error: %s", err.Error())
+	}
 }
