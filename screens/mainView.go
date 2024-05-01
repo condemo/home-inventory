@@ -32,6 +32,7 @@ const (
 	ItemView
 	SelectPlace
 	ItemDetail
+	ConfirmPopUp
 )
 
 type MainModel struct {

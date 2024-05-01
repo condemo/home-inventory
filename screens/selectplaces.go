@@ -6,6 +6,7 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/condemo/home-inventory/elements"
 	"github.com/condemo/home-inventory/keymaps"
 	"github.com/condemo/home-inventory/models"
 	"github.com/condemo/home-inventory/styles"
@@ -101,7 +102,10 @@ func (m SelectPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case key.Matches(msg, m.keys.Delete):
-			m.deletePlace()
+			ModelList[ConfirmPopUp] = elements.NewYesNoMsg(
+				"Al eliminar un lugar eliminas los items asociados a éste.\n\n Estás Seguro?",
+				m)
+			return ModelList[ConfirmPopUp].Update(nil)
 
 		case key.Matches(msg, m.keys.Modify):
 			if !m.filterActive {
@@ -118,6 +122,11 @@ func (m SelectPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case DBUpdated:
 		m.Reload()
+
+	case bool:
+		if msg {
+			m.deletePlace()
+		}
 
 	case WSize:
 		m.placesList.SetHeight(int(msg) / 2)
