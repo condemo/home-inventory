@@ -34,9 +34,9 @@ var Colors = ColorPalette{
 		ANSI:      "11",
 	},
 	HelpPrimary: lipgloss.CompleteColor{
-		TrueColor: "#ffffaf",
-		ANSI256:   "229",
-		ANSI:      "11",
+		TrueColor: "#8787af",
+		ANSI256:   "103",
+		ANSI:      "7",
 	},
 }
 
