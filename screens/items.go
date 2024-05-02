@@ -21,9 +21,8 @@ import (
 var (
 	focusedButton = styles.InputFocusedStyle.Copy().
 			Background(styles.Colors.SelectPrimary).
-			Foreground(styles.Colors.TextPrimary).
-			Render("[ Submit ]")
-	blurredButton = fmt.Sprintf("[ %s ]", styles.BlurredStyle.Render("Submit"))
+			Foreground(styles.Colors.TextPrimary)
+	blurredButton = styles.BlurredStyle
 )
 
 const (
@@ -266,7 +265,14 @@ func (m AddItemsView) View() string {
 		button = &focusedButton
 	}
 
-	fmt.Fprintf(&b, "%s", *button)
+	var btnStr string
+	if m.update {
+		btnStr = button.Render("[ Actualizar ]")
+	} else {
+		btnStr = button.Render("[ Crear ]")
+	}
+
+	fmt.Fprintf(&b, "%s", btnStr)
 
 	if m.err != nil {
 		b.WriteString("\n")
