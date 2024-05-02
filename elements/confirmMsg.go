@@ -8,7 +8,7 @@ import (
 
 var (
 	focusedButton = styles.InputFocusedStyle.Copy().
-			Background(styles.Colors.SelectPrimary).
+			Background(styles.Colors.ErrPrimary).
 			Foreground(styles.Colors.TextPrimary)
 	blurredButton = styles.BlurredStyle
 )
@@ -64,10 +64,14 @@ func (m ConfirmMsg) View() string {
 	btnCont := lipgloss.NewStyle().
 		MarginTop(2).Render(lipgloss.JoinHorizontal(lipgloss.Center, yes, no))
 
-	mainCont := styles.ContainerStyle.Render(
+	msgStyled := lipgloss.NewStyle().
+		Foreground(styles.Colors.ErrPrimary).
+		Render(styles.CenterContainer.Render(m.msg))
+
+	mainCont := styles.ConfirmMsgContainer.Render(
 		lipgloss.JoinVertical(
 			lipgloss.Center,
-			m.msg, btnCont,
+			msgStyled, btnCont,
 		),
 	)
 	return mainCont

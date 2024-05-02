@@ -19,8 +19,8 @@ var Colors = ColorPalette{
 		ANSI:      "4",
 	},
 	ErrPrimary: lipgloss.CompleteColor{
-		TrueColor: "#af0000",
-		ANSI256:   "124",
+		TrueColor: "#ff005f",
+		ANSI256:   "197",
 		ANSI:      "1",
 	},
 	WarningPrimary: lipgloss.CompleteColor{
@@ -55,6 +55,9 @@ var (
 	PlacesContainer        = lipgloss.NewStyle()
 	SelectedContainerStyle = ContainerStyle.Copy().
 				BorderForeground(lipgloss.Color("205"))
+
+	ConfirmMsgContainer = ContainerStyle.Copy().
+				BorderForeground(Colors.ErrPrimary)
 
 	ErrorContainer = lipgloss.NewStyle().
 			Align(lipgloss.Center).BorderForeground(Colors.ErrPrimary).
