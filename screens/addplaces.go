@@ -76,7 +76,6 @@ func (m AddPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.update = true
 		m.nameEntry.SetValue(msg.Name)
 		m.nameEntry.CursorEnd()
-		// m.nameEntry.Focus()
 		m.placeID = msg.ID
 	}
 
