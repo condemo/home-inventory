@@ -101,7 +101,7 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.help.ShowAll = !m.help.ShowAll
 		}
 
-	case DBUpdated:
+	default:
 		m.reloadTable()
 	}
 	return m, cmd
