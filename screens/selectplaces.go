@@ -119,6 +119,7 @@ func (m SelectPlaceView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case *models.Place:
 		m.placesList.InsertItem(len(m.placesList.Items()), msg)
+		m.placesList.Select(len(m.placesList.Items()))
 
 	case DBUpdated:
 		m.Reload()
