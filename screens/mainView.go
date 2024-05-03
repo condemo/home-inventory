@@ -10,6 +10,7 @@ import (
 	"github.com/condemo/home-inventory/elements"
 	"github.com/condemo/home-inventory/keymaps"
 	"github.com/condemo/home-inventory/styles"
+	"github.com/condemo/home-inventory/utils"
 )
 
 var ModelList []tea.Model
@@ -59,6 +60,18 @@ func (m *MainModel) reloadTable() {
 	m.itemTable = elements.NewTable(store)
 }
 
+func (m *MainModel) changeAmount(b bool) {
+	it := utils.TableRowToItem(m.itemTable.SelectedRow())
+	if b {
+		it.Amount += 1
+	} else {
+		it.Amount -= 1
+	}
+
+	store.UpdateItem(it)
+	m.reloadTable()
+}
+
 func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
@@ -96,6 +109,12 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			ModelList[MainView] = m
 			r := m.itemTable.SelectedRow()
 			return ModelList[ItemDetail].Update(r)
+
+		case key.Matches(msg, m.keys.Minus):
+			m.changeAmount(false)
+
+		case key.Matches(msg, m.keys.Plus):
+			m.changeAmount(true)
 
 		case key.Matches(msg, m.keys.Help):
 			m.help.ShowAll = !m.help.ShowAll
