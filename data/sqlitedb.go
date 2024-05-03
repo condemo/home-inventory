@@ -49,7 +49,8 @@ func initSqliteDB() (*SqliteStore, error) {
 
 	// Cacharro
 	_, err = bunDB.NewCreateTable().Model((*models.Cacharro)(nil)).
-		IfNotExists().Exec(context.Background())
+		IfNotExists().ForeignKey(`(place_id) REFERENCES "places" ("id") ON DELETE CASCADE`).
+		Exec(context.Background())
 	if err != nil {
 		return nil, err
 	}
