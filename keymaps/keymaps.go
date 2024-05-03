@@ -6,6 +6,8 @@ type MainKeyMap struct {
 	Up      key.Binding
 	Down    key.Binding
 	AddItem key.Binding
+	Plus    key.Binding
+	Minus   key.Binding
 	Help    key.Binding
 	Search  key.Binding
 	Select  key.Binding
@@ -18,10 +20,9 @@ func (k MainKeyMap) ShortHelp() []key.Binding {
 
 func (k MainKeyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
-		{k.Up, k.Down},
-		{k.Select, k.Search},
-		{k.AddItem, k.Help},
-		{k.Quit},
+		{k.Up, k.Down, k.Select},
+		{k.AddItem, k.Minus, k.Plus},
+		{k.Search, k.Help, k.Quit},
 	}
 }
 
@@ -37,6 +38,14 @@ var MainKeys = MainKeyMap{
 	AddItem: key.NewBinding(
 		key.WithKeys("a"),
 		key.WithHelp("a", "add item"),
+	),
+	Plus: key.NewBinding(
+		key.WithKeys("+"),
+		key.WithHelp("+", "+1 can"),
+	),
+	Minus: key.NewBinding(
+		key.WithKeys("-"),
+		key.WithHelp("-", "-1 can"),
 	),
 	Search: key.NewBinding(
 		key.WithKeys("/"),
