@@ -303,8 +303,8 @@ func validateLetters(s string) error {
 	errStr := "error invalid character"
 
 	for _, r := range s {
-		if unicode.IsNumber(r) {
-			return fmt.Errorf(errStr)
+		if unicode.IsDigit(r) {
+			return nil
 		}
 		if unicode.IsSpace(r) {
 			return nil
