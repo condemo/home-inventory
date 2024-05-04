@@ -4,6 +4,7 @@ import (
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/table"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/condemo/home-inventory/data"
@@ -37,20 +38,34 @@ const (
 )
 
 type MainModel struct {
-	help      help.Model
-	keys      keymaps.MainKeyMap
-	itemTable table.Model
-	loaded    bool
-	quitting  bool
+	help        help.Model
+	searchInput textinput.Model
+	keys        keymaps.MainKeyMap
+	itemTable   table.Model
+	loaded      bool
+	quitting    bool
 }
 
 var store = data.InitDatabase()
 
 func New() *MainModel {
+	si := textinput.New()
+	si.Prompt = " > "
+	si.Placeholder = "Buscar"
+	si.Width = 50
+	si.CharLimit = 50
+	si.Validate = validateLetters
+
+	k := keymaps.MainKeys
+	k.Back.SetEnabled(false)
+
+	h := help.New()
+
 	return &MainModel{
-		itemTable: elements.NewTable(store),
-		keys:      keymaps.MainKeys,
-		help:      help.New(),
+		itemTable:   elements.NewTable(store),
+		searchInput: si,
+		keys:        k,
+		help:        h,
 	}
 }
 
@@ -87,34 +102,67 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case key.Matches(msg, m.keys.Down):
-			if m.itemTable.Cursor() == len(m.itemTable.Rows())-1 {
-				m.itemTable.GotoTop()
-			} else {
-				m.itemTable.SetCursor(m.itemTable.Cursor() + 1)
+			if !m.searchInput.Focused() {
+				if m.itemTable.Cursor() == len(m.itemTable.Rows())-1 {
+					m.itemTable.GotoTop()
+				} else {
+					m.itemTable.SetCursor(m.itemTable.Cursor() + 1)
+				}
 			}
 
 		case key.Matches(msg, m.keys.Up):
-			if m.itemTable.Cursor() == 0 {
-				m.itemTable.SetCursor(len(m.itemTable.Rows()))
-			} else {
-				m.itemTable.SetCursor(m.itemTable.Cursor() - 1)
+			if !m.searchInput.Focused() {
+				if m.itemTable.Cursor() == 0 {
+					m.itemTable.SetCursor(len(m.itemTable.Rows()))
+				} else {
+					m.itemTable.SetCursor(m.itemTable.Cursor() - 1)
+				}
 			}
 
 		case key.Matches(msg, m.keys.AddItem):
-			ModelList[MainView] = m
-			ModelList[ItemView] = NewItemsView()
-			return ModelList[ItemView].Update(nil)
+			if !m.searchInput.Focused() {
+				ModelList[MainView] = m
+				ModelList[ItemView] = NewItemsView()
+				return ModelList[ItemView].Update(nil)
+			}
 
 		case key.Matches(msg, m.keys.Select):
-			ModelList[MainView] = m
-			r := m.itemTable.SelectedRow()
-			return ModelList[ItemDetail].Update(r)
+			if m.searchInput.Focused() {
+				if msg.String() == "enter" {
+					m.searchInput.Blur()
+					m.itemTable.Focus()
+					m.keys.Back.SetEnabled(true)
+				}
+			} else {
+				ModelList[MainView] = m
+				r := m.itemTable.SelectedRow()
+				return ModelList[ItemDetail].Update(r)
+			}
 
 		case key.Matches(msg, m.keys.Minus):
-			m.changeAmount(false)
+			if !m.searchInput.Focused() {
+				m.changeAmount(false)
+			}
 
 		case key.Matches(msg, m.keys.Plus):
-			m.changeAmount(true)
+			if !m.searchInput.Focused() {
+				m.changeAmount(true)
+			}
+
+		case key.Matches(msg, m.keys.Search):
+			if !m.searchInput.Focused() {
+				m.itemTable.Blur()
+				m.searchInput.Focus()
+				m.keys.Back.SetEnabled(true)
+			}
+
+		case key.Matches(msg, m.keys.Back):
+			if m.searchInput.Focused() {
+				m.searchInput.Blur()
+				m.searchInput.Reset()
+				m.itemTable.Focus()
+				m.keys.Back.SetEnabled(false)
+			}
 
 		case key.Matches(msg, m.keys.Help):
 			m.help.ShowAll = !m.help.ShowAll
@@ -123,6 +171,12 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	default:
 		m.reloadTable()
 	}
+
+	if m.searchInput.Focused() {
+		m.searchInput, cmd = m.searchInput.Update(msg)
+		return m, cmd
+	}
+
 	return m, cmd
 }
 
@@ -136,8 +190,13 @@ func (m MainModel) View() string {
 
 	helpView := m.help.View(m.keys)
 
+	inputView := ""
+	if m.searchInput.Focused() {
+		inputView = styles.InputContainer.Render(m.searchInput.View())
+	}
+
 	mainContainer := lipgloss.JoinVertical(
-		lipgloss.Center, m.itemTable.View(), helpView)
+		lipgloss.Center, inputView, m.itemTable.View(), helpView)
 
 	return styles.ContainerStyle.Render(mainContainer)
 }
