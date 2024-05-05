@@ -88,6 +88,18 @@ func (s *SqliteStore) GetAllItems() ([]models.Cacharro, error) {
 	return il, err
 }
 
+func (s *SqliteStore) SearchItems(q string) ([]models.Cacharro, error) {
+	var il []models.Cacharro
+	str := fmt.Sprintf("%%%s%%", q)
+
+	err := s.db.NewSelect().Model(&il).
+		Relation("Place").Join("JOIN places AS p ON p.id = c.place_id").
+		Where("c.name LIKE ?", str).WhereOr("c.tags LIKE ?", str).
+		Scan(context.Background())
+
+	return il, err
+}
+
 func (s *SqliteStore) UpdateItem(item *models.Cacharro) error {
 	_, err := s.db.NewUpdate().Model(item).
 		Where("id = ?", item.ID).OmitZero().

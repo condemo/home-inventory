@@ -10,6 +10,7 @@ type Store interface {
 	SaveItem(*models.Cacharro) error
 	GetItem(int64) (*models.Cacharro, error)
 	GetAllItems() ([]models.Cacharro, error)
+	SearchItems(string) ([]models.Cacharro, error)
 	DeleteItem(int64) error
 	UpdateItem(*models.Cacharro) error
 	SavePlace(*models.Place) error
