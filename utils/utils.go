@@ -18,3 +18,17 @@ func TableRowToItem(tr table.Row) *models.Cacharro {
 		Tags:   tr[4],
 	}
 }
+
+func ItemsToTableRow(items []models.Cacharro) []table.Row {
+	var tableList []table.Row
+
+	for _, i := range items {
+		id := strconv.Itoa(int(i.ID))
+		tableList = append(tableList,
+			table.Row{
+				id, i.Name, strconv.Itoa(int(i.Amount)),
+				i.Place.Name, i.Tags,
+			})
+	}
+	return tableList
+}
