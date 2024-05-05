@@ -154,9 +154,11 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, cmd
 				}
 			} else {
-				ModelList[MainView] = m
-				r := m.itemTable.SelectedRow()
-				return ModelList[ItemDetail].Update(r)
+				if len(m.itemTable.Rows()) > 0 {
+					ModelList[MainView] = m
+					r := m.itemTable.SelectedRow()
+					return ModelList[ItemDetail].Update(r)
+				}
 			}
 
 		case key.Matches(msg, m.keys.Minus):
