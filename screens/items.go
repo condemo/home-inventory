@@ -202,7 +202,7 @@ func (m AddItemsView) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Batch(cmds...)
 
 		case key.Matches(msg, m.keys.Back):
-			return ModelList[MainView].Update(nil)
+			return ModelList[MainView].Update(DBUpdated(true))
 
 		case key.Matches(msg, m.keys.Quit):
 			m.quitting = true
