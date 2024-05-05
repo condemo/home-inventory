@@ -24,7 +24,7 @@ func (k SelectPlaceKeymap) FullHelp() []key.Binding {
 var SelectPlKeymap = SelectPlaceKeymap{
 	Back: key.NewBinding(
 		key.WithKeys("esc"),
-		key.WithHelp("esc", "go back"),
+		key.WithHelp("esc", "back"),
 	),
 	Select: key.NewBinding(
 		key.WithKeys("enter", " "),

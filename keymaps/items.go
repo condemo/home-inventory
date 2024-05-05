@@ -33,7 +33,7 @@ var ItemsKeys = ItemsKeymaps{
 	),
 	Back: key.NewBinding(
 		key.WithKeys("esc"),
-		key.WithHelp("esc", "go back"),
+		key.WithHelp("esc", "back"),
 	),
 	Quit: key.NewBinding(
 		key.WithKeys("ctrl+c"),

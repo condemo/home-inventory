@@ -21,7 +21,7 @@ func (k PlacesKeymaps) FullHelp() [][]key.Binding {
 var PlacesKeys = PlacesKeymaps{
 	Back: key.NewBinding(
 		key.WithKeys("esc"),
-		key.WithHelp("esc", "go back"),
+		key.WithHelp("esc", "back"),
 	),
 	Submit: key.NewBinding(
 		key.WithKeys("enter"),
