@@ -1,6 +1,8 @@
 package screens
 
 import (
+	"log"
+
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/table"
@@ -38,6 +40,7 @@ const (
 )
 
 type MainModel struct {
+	searchQuery string
 	help        help.Model
 	searchInput textinput.Model
 	keys        keymaps.MainKeyMap
@@ -54,7 +57,6 @@ func New() *MainModel {
 	si.Placeholder = "Buscar"
 	si.Width = 50
 	si.CharLimit = 50
-	si.Validate = validateLetters
 
 	k := keymaps.MainKeys
 	k.Back.SetEnabled(false)
@@ -85,6 +87,17 @@ func (m *MainModel) changeAmount(b bool) {
 
 	store.UpdateItem(it)
 	m.reloadTable()
+}
+
+func (m *MainModel) searchTable() {
+	il, err := store.SearchItems(m.searchQuery)
+	if err != nil {
+		// TODO: Implementar error en esta vista
+		log.Panic(err)
+	}
+
+	tr := utils.ItemsToTableRow(il)
+	m.itemTable.SetRows(tr)
 }
 
 func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -130,8 +143,15 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.searchInput.Focused() {
 				if msg.String() == "enter" {
 					m.searchInput.Blur()
+					m.searchInput.Reset()
 					m.itemTable.Focus()
-					m.keys.Back.SetEnabled(true)
+					if m.searchQuery == "" {
+						m.keys.Back.SetEnabled(false)
+						m.reloadTable()
+					} else {
+						m.keys.Back.SetHelp("esc", "reset")
+					}
+					return m, cmd
 				}
 			} else {
 				ModelList[MainView] = m
@@ -151,29 +171,43 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, m.keys.Search):
 			if !m.searchInput.Focused() {
+				m.itemTable.SetRows([]table.Row{})
 				m.itemTable.Blur()
 				m.searchInput.Focus()
+				m.keys.Back.SetHelp("esc", "back")
 				m.keys.Back.SetEnabled(true)
+				return m, cmd
 			}
 
 		case key.Matches(msg, m.keys.Back):
+			m.searchQuery = ""
+			m.reloadTable()
+			if m.keys.Back.Enabled() {
+				m.keys.Back.SetEnabled(false)
+			}
 			if m.searchInput.Focused() {
 				m.searchInput.Blur()
 				m.searchInput.Reset()
 				m.itemTable.Focus()
 				m.keys.Back.SetEnabled(false)
+
+				return m, cmd
 			}
 
 		case key.Matches(msg, m.keys.Help):
 			m.help.ShowAll = !m.help.ShowAll
 		}
 
-	default:
-		m.reloadTable()
+	case DBUpdated:
+		if !m.searchInput.Focused() {
+			m.reloadTable()
+		}
 	}
 
 	if m.searchInput.Focused() {
 		m.searchInput, cmd = m.searchInput.Update(msg)
+		m.searchQuery = m.searchInput.Value()
+		m.searchTable()
 		return m, cmd
 	}
 
