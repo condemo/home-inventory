@@ -74,7 +74,9 @@ func New() *MainModel {
 func (m MainModel) Init() tea.Cmd { return nil }
 
 func (m *MainModel) reloadTable() {
+	sel := m.itemTable.Cursor()
 	m.itemTable = elements.NewTable(store)
+	m.itemTable.SetCursor(sel)
 }
 
 func (m *MainModel) changeAmount(b bool) {
